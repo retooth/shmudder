@@ -322,6 +322,18 @@ class ReusableItem (Item):
         """ returns boolean, if item is in use"""
         
         return self.inuse
+    
+    def supportsUseAlias (self,regex):
+        """ Define here, if item supports regex as an usage
+        alias. Returns False as default 
+        @rtype: bool"""
+        return False
+    
+    def supportsUnuseAlias (self,regex):
+        """ Define here, if item supports regex as an unuse
+        alias. Returns False as default 
+        @rtype: bool"""
+        return False
 
 
 # TODO:
