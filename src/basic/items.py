@@ -17,12 +17,10 @@
 
 from abstract.perception import Adressable, Visible, AdressableCollection
 from basic.details import DetailCollection
-from actions.exceptions import *
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
 from mixins.misc import Groupable
-
-
+from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotInUse
 
 class Item (DetailCollection,
             Adressable,

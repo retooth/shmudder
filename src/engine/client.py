@@ -157,11 +157,11 @@ class GameHandler (object):
         """
         
         # get the current context and parse command
-        action = self.context.understand(command)
+        actionf, regex, arguments  = self.context.parse(command)
         
         # try to do the action
         try:
-            action.do(self)
+            actionf(self,regex,arguments)
         except ContextError as ce :
             # action is not possible for some reason:
             # handle the exception

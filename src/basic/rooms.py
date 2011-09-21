@@ -22,8 +22,8 @@ from abstract.causality import CausalEnviroment
 from basic.details import DetailCollection
 from basic.characters import CharacterCollection
 from basic.items import ItemCollection
-from actions.exceptions import *
 from random import choice
+from basic.exceptions import NoSuchDirection, AmbigousDirection
 
 class Exit (Adressable):
     

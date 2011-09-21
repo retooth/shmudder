@@ -32,8 +32,7 @@ from basic.items import ItemCollection
 from magic.aura import AuraCollection
 from engine.user import User
 from engine.client import GameHandler
-from actions.exceptions import *
-
+from basic.exceptions import ImprovementNotAllowed
 
 
 class BodyPart (Adressable) :
