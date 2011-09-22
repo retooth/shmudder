@@ -39,7 +39,7 @@ class Fights (LoopingCall):
     def reset (self):
             
         for enemy in self.opponents:
-            enemy.fthread.removeEnemy(self.fighter)
+            enemy.fights.removeEnemy(self.fighter)
     
         self.fqueue = []
     

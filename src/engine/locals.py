@@ -14,7 +14,7 @@ from basic.items import *
 from basic.rooms import *
 
 from physical.light import *
-from magic.aura import *
+#from magic.aura import *
 
-from language.universal import *
 from language.german import *
+from language.universal import *

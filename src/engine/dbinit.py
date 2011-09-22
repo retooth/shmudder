@@ -58,9 +58,9 @@ def createBaseTables ():
     LightIntensityListener.createTable()
     IlluminatedRoom.createTable()
     
-    Aura.createTable()
-    AuraCollection.createTable()
+    #Aura.createTable()
+    #AuraCollection.createTable()
     
-    Communicator.createTable()
+    #Communicator.createTable()
     User.createTable()
     
