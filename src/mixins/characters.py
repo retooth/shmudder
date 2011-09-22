@@ -31,7 +31,7 @@ class MilitantCharacter (object):
         self.fights.start(1.0)
     
     def getOpponents (self):
-        return self.fthread._fqueue
+        return self.fights.opponents
     
     opponents = property(getOpponents)
 
