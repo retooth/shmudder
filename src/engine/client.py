@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-from language.universal import Context
 from twisted.protocols.basic import LineReceiver
-from actions.exceptions import ContextError
+from basic.exceptions import ContextError
 
 #    This file is part of Shmudder.
 #
