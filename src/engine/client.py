@@ -155,11 +155,10 @@ class GameHandler (object):
         was not found)
         """
         
-        # get the current context and parse command
-        actionf, regex, arguments  = self.context.parse(command)
-        
         # try to do the action
         try:
+            # get the current context and parse command
+            actionf, regex, arguments  = self.context.parse(command)
             actionf(self,regex,arguments)
         except ContextError as ce :
             # action is not possible for some reason:
