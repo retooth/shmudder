@@ -132,14 +132,17 @@ def examine (player, regex, arguments):
     room    = player.location    
     exstr   = arguments[0]
     details = room.callDetails(exstr)
-
+    items   = player.inventory.callItems(exstr)
+    
     # TODO: recursive search, execute on items and characters
         
-    if not details:
+    if not (details or items) :
         raise DetailNotFound("")
 
-    for detail in details:
-        detail.examine(actor=player)
+    all = details + items
+
+    for obj in all:
+        obj.showLong(actor=player)
 
 
 
