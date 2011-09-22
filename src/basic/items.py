@@ -20,7 +20,7 @@ from basic.details import DetailCollection
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
 from mixins.misc import Groupable
-from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotInUse
+from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotInUse, UnusableItem
 
 class Item (DetailCollection,
             Adressable,
@@ -48,6 +48,9 @@ class Item (DetailCollection,
         Adressable.__init__(self)
         Visible.__init__(self)
         self.collection = None
+    
+    def use (self):
+        raise UnusableItem("")
     
     def isInUse (self):
         """ [internal] Just a default to avoid type checking
@@ -112,7 +115,22 @@ class Item (DetailCollection,
         
         actor.inventory.addItem(self)
 
-
+    def loose (self, actor):
+        
+        """ [player action] Looses item """
+        
+        # free bodyparts (suppress unuse messages)
+        bodyparts = actor.bodyparts
+        
+        for bp in bodyparts:
+            if bp.item == self :
+                bp.item = None
+                
+        self.inuse = False
+        
+        room = actor.location
+        room.addItem(self)
+        
 
 
 class ItemCollection (AdressableCollection):
