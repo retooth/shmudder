@@ -29,7 +29,6 @@ from abstract.perception import Adressable, Visible, AdressableCollection
 from abstract.evolvement import GradualImprovable, Improvable
 from basic.details import DetailCollection
 from basic.items import ItemCollection
-from magic.aura import AuraCollection
 from engine.user import User
 from engine.client import GameHandler
 from basic.exceptions import ImprovementNotAllowed
@@ -233,7 +232,6 @@ class Character (Adressable,
     communicator    = Reference()
     npcparty        = Reference()
     attributes      = Reference()
-    aura            = Reference()
     
     constitution      = BackRef(Constitution,"character")
     unsortedbodyparts = BackRef(BodyPart,"character")
@@ -249,7 +247,6 @@ class Character (Adressable,
         self.location = None
     
         self.communicator = None
-        self.aura = None
     
     def __initdefaults__ (self):
 
@@ -258,7 +255,6 @@ class Character (Adressable,
         self.inventory = Inventory()
         self.npcparty = Party()
         self.attributes = AttributeCollection()
-        self.aura = AuraCollection(self)
            
             
     def addBodyPart (self, bp):
