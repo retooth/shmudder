@@ -200,10 +200,10 @@ def throwAway (player, regex, arguments):
 
 
 def take (player, regex, arguments):
-        
-    inv     = player.inventory
-    itemstr = arguments[0]     
-    items   = inv.callItems(itemstr)
+    
+    room    = player.location
+    itemstr = arguments[0]
+    items   = room.callItems(itemstr)
         
         
     if not items :
