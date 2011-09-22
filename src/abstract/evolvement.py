@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from abstract.perception import Adressable, AdressableCollection
-from actions.exceptions import *
+from basic.exceptions import *
 from engine.ormapping import Persistent, Integer, PickleType, Reference, BackRef
 
 """
