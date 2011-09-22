@@ -334,7 +334,7 @@ def unuse (player, regex, arguments):
     
     supported = []
     for item in items:
-        if item.supportsUseAlias(regex):
+        if item.supportsUnuseAlias(regex):
             supported.append(item)
     
     if not supported :
