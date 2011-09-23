@@ -231,10 +231,10 @@ class RegisterHandler (GameHandler):
     """
 
     
-    playertypes    = []
-    playerchoice   = None
-    passwordchoice = None
-    namechoice     = None
+    playertypes     = []
+    characterchoice = None
+    passwordchoice  = None
+    namechoice      = None
     
     def __init__ (self):
         GameHandler.__init__(self)
@@ -249,7 +249,7 @@ class RegisterHandler (GameHandler):
 
     def __contextinit__ (self):
         cls = type(self)
-        plc = cls.playerchoice()
+        plc = cls.characterchoice()
         self.context = plc
 
     def addChoice (self, context):
