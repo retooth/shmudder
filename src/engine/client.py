@@ -19,7 +19,7 @@ from basic.exceptions import ContextError
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class MudbathProtocol(LineReceiver,object):
+class ShmudderProtocol(LineReceiver,object):
     
     """ 
     @author: Fabian Vallon 

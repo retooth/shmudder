@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from twisted.internet.protocol import ServerFactory
-from engine.client import MudbathProtocol
+from engine.client import ShmudderProtocol
 
 #    This file is part of Shmudder.
 #
@@ -18,9 +18,9 @@ from engine.client import MudbathProtocol
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-class MudbathFactory(ServerFactory):
+class ShmudderFactory(ServerFactory):
 
-    protocol = MudbathProtocol
+    protocol = ShmudderProtocol
 
     def __init__(self):
         self.clients = []
