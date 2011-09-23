@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 from twisted.protocols.basic import LineReceiver
+from twisted.internet.protocol import ServerFactory
+
 from basic.exceptions import ContextError
 
 #    This file is part of Shmudder.
@@ -99,6 +101,12 @@ class ShmudderProtocol(LineReceiver,object):
             self.handler.location     = None
 
 
+class ShmudderFactory(ServerFactory):
+
+    protocol = ShmudderProtocol
+
+    def __init__(self):
+        self.clients = []
 
 
 class GameHandler (object):
