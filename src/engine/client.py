@@ -269,7 +269,7 @@ class RegisterHandler (GameHandler):
         types = cls.playertypes
         
         for t in types :
-            if key in t.typeKeys :
+            if key in t.typekeywords :
                 return t
                 break
             

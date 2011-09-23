@@ -510,7 +510,11 @@ class Player (GameHandler,
     
     def __postload__ (self):
         self._context = None
-        
+    
+    def __initdefaults__ (self):
+        Character.__initdefaults__(self)
+        self.party = None
+    
     @staticmethod
     def showTypeInfo(handler):
         
@@ -539,6 +543,7 @@ class Player (GameHandler,
         player creation process is done """
         
         handler.client.handler = self
+        self.location = self.defaultlocation
     
     def wakeup (self, handler):
         
