@@ -45,6 +45,12 @@ class PasswordContext (Context):
         self.addSemantics("(.+)", password)
         self.addExceptionHandling(BadPassword, "Wrong password")
 
+    def showWelcome (self, handler):
+        handler.receiveMessage("Password:")
+
+    def showGoodBye (self,handler):
+        pass
+
 class NameChoiceContext (Context):
     
     def __init__(self):
@@ -53,12 +59,26 @@ class NameChoiceContext (Context):
         self.addExceptionHandling(PlayerExists, "This name already exists")
         self.addExceptionHandling(UnknownAction, "Player names may only contain letters and numbers")
 
+    def showWelcome (self, handler):
+        handler.receiveMessage("Please enter a name:")
+
+    def showGoodBye (self,handler):
+        pass
+
+
 class PasswordChoiceContext (Context):
     
     def __init__(self):
         Context.__init__(self)
         self.addSemantics("(.+)", choosePassword)
         
+    def showWelcome (self, handler):
+        handler.receiveMessage("Please enter a password:")
+
+    def showGoodBye (self,handler):
+        pass
+
+
 
 class BasicContext (Context):
     
