@@ -194,7 +194,6 @@ class Room (Visible,
         self.removeCharacter(actor)
         
         newplace.addCharacter(actor)
-        newplace.showLong(actor)
             
         
     
