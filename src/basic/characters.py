@@ -231,7 +231,7 @@ class Character (Adressable,
     inventory       = Reference()
     communicator    = Reference()
     npcparty        = Reference()
-    attributes      = Reference()
+    attributeset    = Reference()
     
     constitution      = BackRef(Constitution,"character")
     unsortedbodyparts = BackRef(BodyPart,"character")
@@ -254,7 +254,7 @@ class Character (Adressable,
         
         self.inventory = Inventory()
         self.npcparty = Party()
-        self.attributes = AttributeCollection()
+        self.attributeset = AttributeCollection()
            
             
     def addBodyPart (self, bp):
@@ -526,7 +526,7 @@ class Player (GameHandler,
         
         raise NotImplementedError("Lack of static showTypeInfo method")
      
-    def showInfoScreen (self, actor):
+    def showInfoScreen (self):
         
         """
         should show an general info

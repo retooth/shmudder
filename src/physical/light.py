@@ -115,5 +115,10 @@ class IlluminatedRoom (Room):
     def getLightIntensity(self):
         return self.lil.intensity
     
-    lightintensity = property(fget=getLightIntensity,doc="Rooms light intensity as an int")
+    def setLightIntensity(self,li):
+        self.lil.intensity = li
+    
+    lightintensity = property(fget=getLightIntensity,
+                              fset=setLightIntensity,
+                              doc="Rooms light intensity as an int")
     
