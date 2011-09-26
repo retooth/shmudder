@@ -38,6 +38,7 @@ class Detail (Adressable,Perceivable):
     explicit   = Boolean()
     
     def __init__ (self):
+        Perceivable.__init__(self)
         Adressable.__init__(self)
         
         self.explicit = False

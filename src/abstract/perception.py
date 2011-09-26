@@ -122,10 +122,11 @@ class AdressableCollection (Persistent):
 
 class Perceivable (Persistent):
     
+    __class_table__ = "Perceivable"
     
     shortdescription = String()
     longdescription  = String()
-    smell            = String()
+    odor             = String()
     feeling          = String()
     sound            = String()
     
@@ -140,11 +141,13 @@ class Perceivable (Persistent):
     def showShort (self, actor):
         if self.shortdescription:
             actor.receiveMessage(self.shortdescription)
+            return
         raise Invisible("")
 
     def showLong (self, actor):
-        if self.shortdescription:
+        if self.longdescription:
             actor.receiveMessage(self.shortdescription)
+            return
         raise Invisible("")
 
     def smell (self, actor):
@@ -156,11 +159,13 @@ class Perceivable (Persistent):
     def touch (self, actor):
         if self.feeling:
             actor.receiveMessage(self.feeling)
+            return
         raise NoFeeling ("")
             
     def listen (self, actor):
         if self.sound:
             actor.receiveMessage(self.sound)
+            return
         raise NoSound("")
             
 

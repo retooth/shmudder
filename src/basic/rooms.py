@@ -70,6 +70,7 @@ class Room (Perceivable,
     exits = BackRef(Exit,"anchor")
     
     def __init__(self):
+        Perceivable.__init__(self)
         DetailCollection.__init__(self)
         CausalEnviroment.__init__(self)
         CharacterCollection.__init__(self)

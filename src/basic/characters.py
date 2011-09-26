@@ -241,7 +241,7 @@ class Character (Adressable,
         
         Adressable.__init__(self)
         DetailCollection.__init__(self)
-          
+        Perceivable.__init__(self)
         # place pointers
         self.defaultlocation = None
         self.location = None
