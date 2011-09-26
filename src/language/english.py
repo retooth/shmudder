@@ -2,6 +2,7 @@
 
 from language.universal import Context
 from basic.actions import *
+from abstract.exceptions import *
 from basic.exceptions import *
 
 #    This file is part of Shmudder.
@@ -116,6 +117,11 @@ class BasicContext (Context):
     
         self.addSemantics("examine (.+)",examine)
         self.addSemantics("ex (.+)",examine)
+        self.addSemantics("smell (.+)", smell)
+        self.addSemantics("touch (.+)", touch)
+        self.addSemantics("listen to (.+)", listen)
+        self.addSemantics("listen (.+)", listen)
+        
         
         self.addSemantics("give ([a-zA-Z]+) ([a-zA-Z]+)",giveTo)
         
@@ -148,3 +154,7 @@ class BasicContext (Context):
         self.addExceptionHandling(UnsupportedUnuseAlias, "You can't put that item away like that")
         self.addExceptionHandling(CantAttackThisCharacter,"You can't attack this character")
 
+        self.addExceptionHandling(Invisible, "This thing is invisible")
+        self.addExceptionHandling(NoSound, "You hear no sound")
+        self.addExceptionHandling(NoOdor, "It doesn't smell special")
+        self.addExceptionHandling(NoFeeling, "It doesn't feel special")

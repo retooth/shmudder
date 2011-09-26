@@ -3,6 +3,7 @@
 from language.universal import Context
 from basic.actions import *
 from basic.exceptions import *
+from abstract.exceptions import *
 
 #    This file is part of Shmudder.
 #
@@ -116,6 +117,12 @@ class BasicContext (Context):
     
         self.addSemantics("untersuche (.+)",examine)
         self.addSemantics("unt (.+)",examine)
+        self.addSemantics("riech (.+)", smell)
+        self.addSemantics("rieche (.+)", smell)
+        self.addSemantics("beruehr (.+)", touch)
+        self.addSemantics("beruehre (.+)", touch)
+        self.addSemantics("hoer (.+)", listen)
+        self.addSemantics("hoere (.+)", listen)
         
         self.addSemantics("gib ([a-zA-Z]+) ([a-zA-Z]+)",giveTo)
         
@@ -148,3 +155,7 @@ class BasicContext (Context):
         self.addExceptionHandling(UnsupportedUnuseAlias, "Das kannst du so nicht weglegen")
         self.addExceptionHandling(CantAttackThisCharacter,"Du kannst gegen diesen Spieler nicht kaempfen")
 
+        self.addExceptionHandling(Invisible, "Dieses Ding ist unsichtbar")
+        self.addExceptionHandling(NoSound, "Du hoerst kein Gerausch")
+        self.addExceptionHandling(NoOdor, "Der Gegenstand riecht nach nichts besonderem")
+        self.addExceptionHandling(NoFeeling, "Der Gegenstand fuehlt sich nicht besonders an")

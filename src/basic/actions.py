@@ -133,17 +133,63 @@ def examine (player, regex, arguments):
     exstr   = arguments[0]
     details = room.callDetails(exstr)
     items   = player.inventory.callItems(exstr)
+    chars   = room.callCharacters(exstr)
     
-    # TODO: recursive search, execute on items and characters
-        
     if not (details or items) :
         raise DetailNotFound("")
 
-    all = details + items
+    all = details + items + chars
 
     for obj in all:
-        obj.showLong(actor=player)
+        obj.showLong(player)    
 
+def smell (player, regex, arguments):        
+        
+    room    = player.location    
+    exstr   = arguments[0]
+    details = room.callDetails(exstr)
+    items   = player.inventory.callItems(exstr)
+    chars   = room.callCharacters(exstr)
+    
+    if not (details or items) :
+        raise DetailNotFound("")
+
+    all = details + items + chars
+
+    for obj in all:
+        obj.smell(player)    
+
+def listen (player, regex, arguments):        
+        
+    room    = player.location    
+    exstr   = arguments[0]
+    details = room.callDetails(exstr)
+    items   = player.inventory.callItems(exstr)
+    chars   = room.callCharacters(exstr)
+    
+    if not (details or items) :
+        raise DetailNotFound("")
+
+    all = details + items + chars
+
+    for obj in all:
+        obj.listen(player)    
+
+def touch (player, regex, arguments):        
+        
+    room    = player.location    
+    exstr   = arguments[0]
+    details = room.callDetails(exstr)
+    items   = player.inventory.callItems(exstr)
+    chars   = room.callCharacters(exstr)
+    
+    if not (details or items) :
+        raise DetailNotFound("")
+
+    all = details + items + chars
+
+    for obj in all:
+        obj.touch(player)    
 
 
 # enviroment
