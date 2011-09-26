@@ -376,6 +376,7 @@ class Persistent (object):
             self._instore = True
             self.store = Store()
             self.store.add(self)
+            self.patchid = 0
     
     @classmethod
     def createTable (cls):

@@ -1,4 +1,5 @@
-from engine.ormapping import Persistent, PickleType
+from engine.ormapping import Persistent, PickleType, String
+from abstract.exceptions import *
 
 #    This file is part of Shmudder.
 #
@@ -119,37 +120,48 @@ class AdressableCollection (Persistent):
         return found
 
 
-
-
-class Visible (object):
+class Perceivable (Persistent):
     
-    """ 
-    @author: Fabian Vallon 
-    @license: U{GPL v3<http://www.gnu.org/licenses/>}
-    @version: 0.1
-    @since: 0.1
     
-    Interface for visible objects
-    """
+    shortdescription = String()
+    longdescription  = String()
+    smell            = String()
+    feeling          = String()
+    sound            = String()
     
-    def showShort (self,actor):
-    
-        """ 
-        Should send a short description of the object to actor 
-        @raise NotImplementedError: always 
-        """
-        clsn = self.__class__.__name__
-        raise NotImplementedError(clsn + " is a visible object, but doesn't have a showShort method")
-    
-    def showLong (self,actor):
-    
-        """ 
-        Should send a long description of the object to actor
-        @raise NotImplementedError: always 
-        """
+    def __init__ (self):
+        Persistent.__init__(self)
+        self.shortdescription = ''
+        self.longdescription  = ''
+        self.odor = ''
+        self.feeling = ''
+        self.sound = ''
         
-        clsn = self.__class__.__name__
-        raise NotImplementedError(clsn + " is a visible object, but doesn't have a showLong method")
-    
+    def showShort (self, actor):
+        if self.shortdescription:
+            actor.receiveMessage(self.shortdescription)
+        raise Invisible("")
+
+    def showLong (self, actor):
+        if self.shortdescription:
+            actor.receiveMessage(self.shortdescription)
+        raise Invisible("")
+
+    def smell (self, actor):
+        if self.odor:
+            actor.receiveMessage(self.odor)
+            return
+        raise NoOdor("")
+        
+    def touch (self, actor):
+        if self.feeling:
+            actor.receiveMessage(self.feeling)
+        raise NoFeeling ("")
+            
+    def listen (self, actor):
+        if self.sound:
+            actor.receiveMessage(self.sound)
+        raise NoSound("")
+            
 
 # TODO: hearable, touchable, smellable, tasteable

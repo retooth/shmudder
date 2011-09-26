@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Adressable, Visible, AdressableCollection
+from abstract.perception import Adressable, Perceivable, AdressableCollection
 from basic.details import DetailCollection
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
@@ -24,7 +24,7 @@ from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotIn
 
 class Item (DetailCollection,
             Adressable,
-            Visible):
+            Perceivable):
 
     """ 
     @author: Fabian Vallon 
@@ -46,7 +46,7 @@ class Item (DetailCollection,
     def __init__(self):
         DetailCollection.__init__(self)
         Adressable.__init__(self)
-        Visible.__init__(self)
+        Perceivable.__init__(self)
         self.collection = None
     
     def use (self):

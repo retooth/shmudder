@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from abstract.perception import Adressable, Visible, AdressableCollection
-from engine.ormapping import Reference, BackRef, Boolean
+from abstract.perception import Adressable, Perceivable, AdressableCollection
+from engine.ormapping import Reference, BackRef, Boolean, String
 
 #    This file is part of Shmudder.
 #
@@ -19,7 +19,7 @@ from engine.ormapping import Reference, BackRef, Boolean
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Detail (Adressable,Visible):
+class Detail (Adressable,Perceivable):
     
     """ 
     @author: Fabian Vallon 
@@ -33,6 +33,7 @@ class Detail (Adressable,Visible):
 
     
     __class_table__ = "Detail"
+    
     collection = Reference()
     explicit   = Boolean()
     
@@ -43,14 +44,6 @@ class Detail (Adressable,Visible):
         """ Set this to True, if you want your Detail
         explicitely listed in room descriptions.
         (Don't forget to implement showShort)"""
-    
-    def examine (self, actor):
-        
-        """ 
-        [player action] Forwarding method for Visible.showLong()
-        """
-        
-        self.showLong(actor)
 
 
 

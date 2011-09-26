@@ -17,7 +17,7 @@
 
 
 from engine.ormapping import Reference, BackRef, Boolean
-from abstract.perception import Adressable, Visible
+from abstract.perception import Adressable, Perceivable
 from abstract.causality import CausalEnviroment
 from basic.details import DetailCollection
 from basic.characters import CharacterCollection
@@ -49,7 +49,7 @@ class Exit (Adressable):
     def __str__ (self):
         return self.skeywords[0]
 
-class Room (Visible,
+class Room (Perceivable,
             DetailCollection,
             CharacterCollection,
             ItemCollection,

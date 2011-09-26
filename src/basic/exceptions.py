@@ -16,12 +16,7 @@
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class ContextError (StandardError):
-    def __init__(self, arg):
-        self.args = arg 
-        
-class PlayerError (ContextError):
-    pass
+from abstract.exceptions import PlayerError
 
 class UnknownAction (PlayerError):
     pass

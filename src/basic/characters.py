@@ -25,7 +25,7 @@
  """
 
 from engine.ormapping import Reference, BackRef, Boolean, Integer
-from abstract.perception import Adressable, Visible, AdressableCollection
+from abstract.perception import Adressable, Perceivable, AdressableCollection
 from abstract.evolvement import GradualImprovable, Improvable
 from basic.details import DetailCollection
 from basic.items import ItemCollection
@@ -211,7 +211,7 @@ class VitalConstitution (Constitution):
 
 
 class Character (Adressable,
-                 Visible,
+                 Perceivable,
                  DetailCollection):
 
 
