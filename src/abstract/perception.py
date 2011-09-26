@@ -146,7 +146,7 @@ class Perceivable (Persistent):
 
     def showLong (self, actor):
         if self.longdescription:
-            actor.receiveMessage(self.shortdescription)
+            actor.receiveMessage(self.longdescription)
             return
         raise Invisible("")
 
