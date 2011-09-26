@@ -3,7 +3,7 @@
 from twisted.protocols.basic import LineReceiver
 from twisted.internet.protocol import ServerFactory
 
-from basic.exceptions import ContextError
+from abstract.exceptions import ContextError
 
 #    This file is part of Shmudder.
 #
