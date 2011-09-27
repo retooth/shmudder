@@ -362,6 +362,9 @@ class PersistentMeta (type):
                 d["__attributes__"][real] = "blob default 0"
                 v.real = real
 
+        if d["__attributes__"]:
+            d["__class_table__"] = name
+
         return type.__new__(self, name, bases, d)
    
    

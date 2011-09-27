@@ -32,8 +32,6 @@ class Detail (Adressable,Perceivable):
     """
 
     
-    __class_table__ = "Detail"
-    
     collection = Reference()
     explicit   = Boolean()
     

@@ -44,8 +44,6 @@ class Improvable (Persistent):
     property isperfect and isbroken instead
     """
     
-    __class_table__ = "Improvable"
-    
     quality    = Integer()
     maxquality = Integer()
     
@@ -166,7 +164,6 @@ class GradualImprovable (Improvable):
     This is mainly used in the player class
     """
     
-    __class_table__ = "GradualImprovable"
     
     level      = Integer()
     levelstops = PickleType()

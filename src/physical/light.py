@@ -27,7 +27,6 @@ class LightIntensityChange (Signal):
         
 class LightSource (ReusableItem, SignalEmitter):
     
-    __class_table__ = "LightSource"
     lightintensity = Integer()
     
     def __init__ (self):
@@ -73,7 +72,6 @@ class LightIntensityListener (SignalListener):
     the current light intensity
     """
     
-    __class_table__ = "LightIntensityListener"
     intensity = Integer()
     
     
@@ -102,7 +100,6 @@ class IlluminatedRoom (Room):
     interact with items, that derive from LightSource
     """
     
-    __class_table__ = "IlluminatedRoom"
     
     lil = Reference()
     

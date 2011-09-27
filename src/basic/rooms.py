@@ -36,8 +36,6 @@ class Exit (Adressable):
     Room Exit
     """
     
-    __class_table__ = "Exit"
-    
     anchor    = Reference()
     direction = Reference()
     
@@ -65,8 +63,6 @@ class Room (Perceivable,
     Basic class for dungeon rooms.
     """
 
-    __class_table__  = "Room"
-    
     exits = BackRef(Exit,"anchor")
     
     def __init__(self):
@@ -253,7 +249,6 @@ class DefaultRoom (Room):
     behavior will occur 
     """
 
-    __class_table__ = "DefaultRoom"
     singletonready = Boolean()
     
     def __new__(cls, *args):

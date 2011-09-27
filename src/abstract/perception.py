@@ -30,8 +30,6 @@ class Adressable (Persistent):
     Makes an object answer to a string representation
     """
 
-    __class_table__ = "Adressable"
-
     skeywords = PickleType()
     pkeywords = PickleType()
 
@@ -122,7 +120,6 @@ class AdressableCollection (Persistent):
 
 class Perceivable (Persistent):
     
-    __class_table__ = "Perceivable"
     
     shortdescription = String()
     longdescription  = String()

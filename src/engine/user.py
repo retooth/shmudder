@@ -27,8 +27,6 @@ class User (Persistent):
     Saves a (Username,Password) pair
     """
     
-    __class_table__ = "User"
-    
     login = String()
     sha512password = String()
     lastlocation = Reference()

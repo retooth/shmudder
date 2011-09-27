@@ -31,8 +31,6 @@ class Dungeon (Persistent):
     of dungeons, see QuestDungeon
     """
 
-    __class_table__ = "Dungeon"
-    
     rooms = BackRef(Room,"dungeon")
     
     def __init__ (self):

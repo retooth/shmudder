@@ -40,7 +40,6 @@ class Item (DetailCollection,
     """
 
 
-    __class_table__ = "Item"
     collection = Reference()
 
     def __init__(self):
@@ -275,7 +274,6 @@ class ReusableItem (Item):
     Implements player action methods for item usage
     """
     
-    __class_table__ = "ReusableItem"
     
     necessaryslots = PickleType()
     inuse          = Boolean()

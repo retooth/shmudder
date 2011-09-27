@@ -43,8 +43,6 @@ class M2M_EnviromentEmitter (Persistent):
     [internal] Many-to-Many mapping of CausalEnviroments and SignalEmitters.
     """
     
-    __class_table__ = "M2M_EnviromentEmitter"
-
     enviroment = Reference()    
     emitter    = Reference()
 
@@ -65,8 +63,6 @@ class M2M_EnviromentListener (Persistent):
     [internal] Many-to-Many mapping of CausalEnviroments and SignalListeners.
     """
     
-    __class_table__ = "M2M_EnviromentListener"
-
     enviroment = Reference()    
     listener   = Reference()
 

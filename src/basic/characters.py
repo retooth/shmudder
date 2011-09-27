@@ -38,8 +38,6 @@ class BodyPart (Adressable) :
     
     """ Body part class for reusable items """
     
-    __class_table__ = "BodyPart"
-    
     character = Reference()
     item      = Reference()
     
@@ -63,7 +61,6 @@ class Attribute (Improvable,
     is something like Strenght or Stamina
     """
     
-    __class_table__ = "Attribute"
     collection = Reference()
     
     def __init__ (self):
@@ -102,7 +99,6 @@ class AttributeCollection (AdressableCollection):
     to disable this feature, set bonus to -1
     """
 
-    __class_table__ = "AttributeCollection"
     
     attributes = BackRef(Attribute,"collection")
     bonus      = Integer()
@@ -167,7 +163,6 @@ class Constitution (Improvable,
     wrapped by a collection. 
     """
     
-    __class_table__ = "Constitution"
     character = Reference()
     
     def __init__ (self):
@@ -224,7 +219,6 @@ class Character (Adressable,
     Character class for players and NPCs
     """
 
-    __class_table__ = "Character"
 
     defaultlocation = Reference()
     location        = Reference()
@@ -448,8 +442,6 @@ class Party (Adressable,
     quests together
     """
     
-    __class_table__ = "Party"
-    
     autofollow = Boolean()
     
     def __init__ (self):
@@ -496,8 +488,6 @@ class Player (GameHandler,
     @since: 0.1
     """
     
-    
-    __class_table__ = "Player"
     
     party = Reference()
     
