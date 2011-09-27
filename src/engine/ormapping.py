@@ -269,6 +269,17 @@ class PickleType (object):
         instance.__update__(self.real)
     
 
+class StringList (object):
+    
+    def __get__(self, instance, owner):
+        strrepr = instance.__dict__[self.real]
+        return strrepr.split("|")
+
+    def __set__(self, instance, value):
+        strrep = "|".join(value)
+        instance.__dict__[self.real] = strrep
+        instance.__update__(self.real)
+
 
 class String (object):
 
