@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from abstract.perception import Adressable, Perceivable, AdressableCollection
-from engine.ormapping import Reference, BackRef, Boolean, String
+from abstract.perception import Perceivable, AddressableCollection
+from engine.ormapping import Reference, BackRef, Boolean
 
 #    This file is part of Shmudder.
 #
@@ -19,7 +19,7 @@ from engine.ormapping import Reference, BackRef, Boolean, String
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Detail (Adressable,Perceivable):
+class Detail (Perceivable):
     
     """ 
     @author: Fabian Vallon 
@@ -37,8 +37,7 @@ class Detail (Adressable,Perceivable):
     
     def __init__ (self):
         Perceivable.__init__(self)
-        Adressable.__init__(self)
-        
+    
         self.explicit = False
         """ Set this to True, if you want your Detail
         explicitely listed in room descriptions.
@@ -47,7 +46,7 @@ class Detail (Adressable,Perceivable):
 
 
 
-class DetailCollection (AdressableCollection):
+class DetailCollection (AddressableCollection):
 
     """ 
     @author: Fabian Vallon 
@@ -61,7 +60,7 @@ class DetailCollection (AdressableCollection):
     details = BackRef(Detail,"collection")
 
     def __init__ (self):
-        AdressableCollection.__init__(self)
+        AddressableCollection.__init__(self)
 
     def addDetail (self, detail):
 

@@ -17,7 +17,7 @@ from abstract.exceptions import *
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Adressable (Persistent):
+class Addressable (Persistent):
     
     # "What we cannot speak about we must pass over in silence" (Wittgenstein)
     
@@ -72,7 +72,7 @@ class Adressable (Persistent):
 
 
 
-class AdressableCollection (Persistent):
+class AddressableCollection (Persistent):
     
     """ 
     @author: Fabian Vallon 
@@ -80,7 +80,7 @@ class AdressableCollection (Persistent):
     @version: 0.1
     @since: 0.1
     
-    Template for Collections, that include Adressable objects
+    Template for Collections, that include Addressable objects
     """
     
     def callCollectionItems (self, keyword, collection):
@@ -89,9 +89,9 @@ class AdressableCollection (Persistent):
         Gets all items in collection, that respond to keyword. Returns
         only a one-item list, if keyword was singular
         
-        @param collection: list of adressable things
+        @param collection: list of addressable things
          
-        @rtype: list<Adressable>
+        @rtype: list<Addressable>
         """
 
         found = []
@@ -100,7 +100,7 @@ class AdressableCollection (Persistent):
             # forward call
             response = thing.call(keyword)
             
-            # handle response as specified in Adressable.call(key)
+            # handle response as specified in Addressable.call(key)
             # 1 means: thing found and it was a singular noun
             
             if response == 1:
@@ -118,7 +118,7 @@ class AdressableCollection (Persistent):
         return found
 
 
-class Perceivable (Persistent):
+class Perceivable (Addressable):
     
     
     shortdescription = String()
@@ -128,7 +128,7 @@ class Perceivable (Persistent):
     sound            = String()
     
     def __init__ (self):
-        Persistent.__init__(self)
+        Addressable.__init__(self)
         self.shortdescription = ''
         self.longdescription  = ''
         self.odor = ''
@@ -166,4 +166,3 @@ class Perceivable (Persistent):
         raise NoSound("")
             
 
-# TODO: hearable, touchable, smellable, tasteable

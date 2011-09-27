@@ -17,7 +17,7 @@
 
 
 from engine.ormapping import Reference, BackRef, Boolean
-from abstract.perception import Adressable, Perceivable
+from abstract.perception import Addressable, Perceivable
 from abstract.causality import CausalEnviroment
 from basic.details import DetailCollection
 from basic.characters import CharacterCollection
@@ -25,7 +25,7 @@ from basic.items import ItemCollection
 from random import choice
 from basic.exceptions import NoSuchDirection, AmbigousDirection
 
-class Exit (Adressable):
+class Exit (Addressable):
     
     """ 
     @author: Fabian Vallon 
@@ -40,7 +40,7 @@ class Exit (Adressable):
     direction = Reference()
     
     def __init__ (self, anchor, direction):
-        Adressable.__init__(self)
+        Addressable.__init__(self)
         self.anchor    = anchor
         self.direction = direction
         

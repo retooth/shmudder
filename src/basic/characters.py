@@ -25,7 +25,7 @@
  """
 
 from engine.ormapping import Reference, BackRef, Boolean, Integer
-from abstract.perception import Adressable, Perceivable, AdressableCollection
+from abstract.perception import Addressable, Perceivable, AddressableCollection
 from abstract.evolvement import GradualImprovable, Improvable
 from basic.details import DetailCollection
 from basic.items import ItemCollection
@@ -34,7 +34,7 @@ from engine.client import GameHandler
 from basic.exceptions import ImprovementNotAllowed
 
 
-class BodyPart (Adressable) :
+class BodyPart (Addressable) :
     
     """ Body part class for reusable items """
     
@@ -42,14 +42,14 @@ class BodyPart (Adressable) :
     item      = Reference()
     
     def __init__ (self):
-        Adressable.__init__(self)
+        Addressable.__init__(self)
         self.item = None
 
 
 
 
 class Attribute (Improvable,
-                 Adressable):
+                 Addressable):
     
     """ 
     @author: Fabian Vallon 
@@ -65,7 +65,7 @@ class Attribute (Improvable,
     
     def __init__ (self):
         Improvable.__init__(self)
-        Adressable.__init__(self)
+        Addressable.__init__(self)
         self.collection = None
 
     def improve (self,actor,value):
@@ -85,7 +85,7 @@ class Attribute (Improvable,
 
 
 
-class AttributeCollection (AdressableCollection):
+class AttributeCollection (AddressableCollection):
 
     """ 
     @author: Fabian Vallon 
@@ -105,7 +105,7 @@ class AttributeCollection (AdressableCollection):
     character  = Reference()
 
     def __init__ (self):
-        AdressableCollection.__init__(self)
+        AddressableCollection.__init__(self)
         self.bonus = 0
 
     def allowsImprovement (self):
@@ -150,7 +150,7 @@ class AttributeCollection (AdressableCollection):
 
 
 class Constitution (Improvable,
-                    Adressable):
+                    Addressable):
     
     """ 
     @author: Fabian Vallon 
@@ -167,7 +167,7 @@ class Constitution (Improvable,
     
     def __init__ (self):
         Improvable.__init__(self)
-        Adressable.__init__(self)
+        Addressable.__init__(self)
     
     def reset (self):
         
@@ -205,8 +205,7 @@ class VitalConstitution (Constitution):
 
 
 
-class Character (Adressable,
-                 Perceivable,
+class Character (Perceivable,
                  DetailCollection):
 
 
@@ -233,7 +232,6 @@ class Character (Adressable,
     
     def __init__ (self):
         
-        Adressable.__init__(self)
         DetailCollection.__init__(self)
         Perceivable.__init__(self)
         # place pointers
@@ -351,7 +349,7 @@ class Character (Adressable,
 
 
 
-class CharacterCollection (AdressableCollection):
+class CharacterCollection (AddressableCollection):
 
     """ 
     @author: Fabian Vallon 
@@ -367,7 +365,7 @@ class CharacterCollection (AdressableCollection):
     characters = BackRef(Character,"location")
 
     def __init__(self):
-        AdressableCollection.__init__(self)
+        AddressableCollection.__init__(self)
 
     def addCharacter (self, c):
 
@@ -429,7 +427,7 @@ class Inventory (ItemCollection):
         
 
 
-class Party (Adressable, 
+class Party (Addressable, 
              CharacterCollection):
     
     """ 
@@ -445,7 +443,7 @@ class Party (Adressable,
     autofollow = Boolean()
     
     def __init__ (self):
-        Adressable.__init__(self)
+        Addressable.__init__(self)
         CharacterCollection.__init__(self)
         self.autofollow = False
     

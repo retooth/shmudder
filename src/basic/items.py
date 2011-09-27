@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Adressable, Perceivable, AdressableCollection
+from abstract.perception import Addressable, Perceivable, AddressableCollection
 from basic.details import DetailCollection
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
@@ -23,7 +23,6 @@ from mixins.misc import Groupable
 from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotInUse, UnusableItem
 
 class Item (DetailCollection,
-            Adressable,
             Perceivable):
 
     """ 
@@ -44,7 +43,6 @@ class Item (DetailCollection,
 
     def __init__(self):
         DetailCollection.__init__(self)
-        Adressable.__init__(self)
         Perceivable.__init__(self)
         self.collection = None
     
@@ -132,7 +130,7 @@ class Item (DetailCollection,
         
 
 
-class ItemCollection (AdressableCollection):
+class ItemCollection (AddressableCollection):
 
     """ 
     @author: Fabian Vallon 
@@ -146,7 +144,7 @@ class ItemCollection (AdressableCollection):
     unsorteditems = BackRef(Item,"collection")
 
     def __init__(self):
-        AdressableCollection.__init__(self)
+        AddressableCollection.__init__(self)
 
     def addItem (self, i):
 

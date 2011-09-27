@@ -34,7 +34,7 @@ def createBaseTables ():
     Attribute.createTable()
     AttributeCollection.createTable()
     
-    Adressable.createTable()
+    Addressable.createTable()
     Perceivable.createTable()
     
     Constitution.createTable()
