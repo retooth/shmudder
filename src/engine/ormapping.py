@@ -182,7 +182,6 @@ class Store (object):
             newobj.store = self
             
             id = objdata[0]
-            print id,
             self.objects[id] = newobj
                         
             newobj.id = id
