@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-from engine.ormapping import Persistent, BackRef, String, Reference
+from engine.ormapping import Persistent, BackRef, String, Reference, Boolean
+from abstract.causality import SignalListener, Signal
 from basic.rooms import Room
 
 #    This file is part of Shmudder.
@@ -56,9 +57,83 @@ class Dungeon (Persistent):
     
     characters = property(fget=getCharacters,doc="A list of all characters in this dungeon")
 
+
+class QuestTask (Persistent):
+    
+    
+    name  = String()
+    complete = Boolean()
+    completionlistener = Reference()
+    
+    def __init__ (self,listener,name):
+        Persistent.__init__(self)
+        self.name = name
+        self.complete = False
+        self.completionlistener = listener
+
+
+class TaskCompletionSignal (Signal):
+    
+    """ 
+    @author: Fabian Vallon
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Emit this type of signal in ANY QuestDungeon room and the
+    appropriate task will be flagged as complete
+    """
+    
+    def __init__ (self, taskname):
+        Signal.__init__(self)
+        self.taskname = taskname
+
+class QuestCompletionListener (SignalListener):
+
+    """ 
+    @author: Fabian Vallon
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Global Listener for QuestDungeons. Features a list
+    of completed tasks. Don't try to manipulate this
+    class during the game. Use the addTask method of
+    the QuestDungeon instance and TaskCompletionSignals
+    for this. 
+    """    
+    
+    dungeon = Reference()
+    tasks   = BackRef(QuestTask,"completionlistener")
+    
+    def __init__ (self,dungeon):
+        SignalListener.__init__(self)
+        self.dungeon = dungeon
+    
+    def addTask (self, name):
+        t = QuestTask(self,name)
+        
+    def signalReceived (self, signal):
+        if not isinstance(signal,TaskCompletionSignal):
+            return
+        name = signal.taskname
+        for t in self.tasks:
+            if t.name == name :
+                t.complete = True
+        self.checkCompletion()
+         
+    def checkCompletion (self):
+        for t in self.tasks :
+            if not t.complete:
+                return
+                break
+        self.dungeon.questComplete()
+            
+
 class QuestDungeon (Dungeon):
     
     identifier = String()
+    completionlistener = Reference()
     
     def getClone(self,identifier):
         dungeons = self.getAllInstances()
@@ -72,4 +147,14 @@ class QuestDungeon (Dungeon):
     
     def __init__ (self):
         Dungeon.__init__(self)
-        
+        self.completionlistener = QuestCompletionListener(self)
+    
+    def addRoom (self,newr):
+        Dungeon.addRoom(self, newr)
+        newr.addListener(self.completionlistener)
+    
+    def addTask (self, name):
+        self.completionlistener.addTask(name)
+    
+    def questComplete(self):
+        pass

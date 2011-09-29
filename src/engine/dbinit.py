@@ -49,6 +49,8 @@ def createBaseTables ():
     
     Dungeon.createTable()
     QuestDungeon.createTable()
+    QuestTask.createTable()
+    QuestCompletionListener.createTable()
     
     Item.createTable()
     ReusableItem.createTable()
@@ -59,7 +61,6 @@ def createBaseTables ():
     LightSource.createTable()
     LightIntensityListener.createTable()
     IlluminatedRoom.createTable()
-    
     #Aura.createTable()
     #AuraCollection.createTable()
     
