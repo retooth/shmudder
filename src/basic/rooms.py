@@ -64,6 +64,7 @@ class Room (Perceivable,
     """
 
     exits = BackRef(Exit,"anchor")
+    dungeon = Reference()
     
     def __init__(self):
         Perceivable.__init__(self)
@@ -188,6 +189,18 @@ class Room (Perceivable,
     
         newplace = exits[0].direction
         
+        # quest dungeons
+        if newplace.dungeon and self.dungeon != newplace.dungeon:
+                
+            partyident = actor.party.identifier
+            clone = newplace.dungeon.getClone(partyident)
+                
+            # reattach room
+            # TODO: sure backRefs are index safe ?
+            if clone != newplace.dungeon :
+                rindex = newplace.dungeon.rooms.index(newplace)
+                newplace = clone.rooms[rindex]
+            
         self.removeCharacter(actor)
         
         newplace.addCharacter(actor)
@@ -231,7 +244,7 @@ class Room (Perceivable,
         hop.addCharacter(actor)
         
     
-class DefaultRoom (Room):
+class UniqueRoom (Room):
     
     """ 
     @author: Fabian Vallon 
@@ -240,12 +253,12 @@ class DefaultRoom (Room):
     @since: 0.1
     
     Singleton version of Room. Use a subclass of this for
-    Player's defaultlocation.
+    Player's defaultlocation or dungeon transition rooms
     
     @warning: Don't overwrite __init__, use __singletoninit__
     instead
     
-    @warning: Don't use DefaultRooms in QuestDungeons. Strange
+    @warning: Don't use UniqueRooms in QuestDungeons. Strange
     behavior will occur 
     """
 

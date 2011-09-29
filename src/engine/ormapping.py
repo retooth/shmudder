@@ -155,8 +155,7 @@ class Store (object):
             
             self.cursor.execute("insert into " + cls.__class_table__ + \
                                 " (id,_class) values (?,?)",t)
-            
-                
+        
         
     
     def load (self,locals):
@@ -340,7 +339,6 @@ class BackRef (object):
         self.ref = "_"+ref
 
     def __get__(self, instance, owner):
-        
         table = self.itemclass.__class_table__
         items = self.store.cursor.execute("select id from " + table + " where " + self.ref + "=" + str(instance.id) + ";").fetchall()
         return map(lambda x: self.store.objects[x[0]], items)
@@ -378,11 +376,11 @@ class PersistentMeta (type):
 
         return type.__new__(self, name, bases, d)
    
-   
-    
+
 class Persistent (object):
     
     __metaclass__ = PersistentMeta
+
     __class_table__ = "Persistent"
 
     def __init__ (self):
@@ -390,7 +388,6 @@ class Persistent (object):
             self._instore = True
             self.store = Store()
             self.store.add(self)
-            self.patchid = 0
     
     @classmethod
     def createTable (cls):
@@ -410,6 +407,15 @@ class Persistent (object):
         s = Store()
         s.cursor.execute("create table if not exists " + cls.__class_table__ + " " + tstr)
     
+    @classmethod
+    def getAllInstances (cls):
+        s = Store()
+        idtuples = s.cursor.execute("select id from Persistent where _class = ?",(cls.__name__,)).fetchall()
+        objects = []
+        for tuple in idtuples:
+            id = tuple[0]
+            objects.append(s.objects[id])
+        return objects
     
     def __delete__ (self):
         
@@ -456,6 +462,7 @@ class Persistent (object):
             self.store.cursor.execute("delete from " + _table + " where id = ?",t)
         
         del self.store.objects[self.id]
+        
     
     def __update__ (self, attrname):
         
@@ -507,4 +514,3 @@ class Persistent (object):
                 
                 self.store.update(table,id,attrname,value)
                 break
-            

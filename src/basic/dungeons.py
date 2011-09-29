@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from engine.ormapping import Persistent, BackRef
+from engine.ormapping import Persistent, BackRef, String, Reference
 from basic.rooms import Room
 
 #    This file is part of Shmudder.
@@ -33,8 +33,12 @@ class Dungeon (Persistent):
 
     rooms = BackRef(Room,"dungeon")
     
+    
     def __init__ (self):
         Persistent.__init__(self)
+    
+    def getClone(self, identifier):
+        return self
     
     def addRoom (self,newr):
         """ Adds a new room to the dungeon """
@@ -51,3 +55,21 @@ class Dungeon (Persistent):
         return characters
     
     characters = property(fget=getCharacters,doc="A list of all characters in this dungeon")
+
+class QuestDungeon (Dungeon):
+    
+    identifier = String()
+    
+    def getClone(self,identifier):
+        dungeons = self.getAllInstances()
+        for d in dungeons:
+            if d.identifier == identifier:
+                return d
+                break
+        newd = self.__class__()
+        newd.identifier = identifier
+        return newd
+    
+    def __init__ (self):
+        Dungeon.__init__(self)
+        

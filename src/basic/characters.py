@@ -424,54 +424,6 @@ class Inventory (ItemCollection):
         actor.receiveMessage("-"*20)
         ItemCollection.showItems(self, actor)
         actor.receiveMessage("-"*20)
-        
-
-
-class Party (Addressable, 
-             CharacterCollection):
-    
-    """ 
-    @author: Fabian Vallon 
-    @license: U{GPL v3<http://www.gnu.org/licenses/>}
-    @version: 0.1
-    @since: 0.1
-    
-    Parties are a crowds of players/npcs, who play and solve
-    quests together
-    """
-    
-    autofollow = Boolean()
-    
-    def __init__ (self):
-        Addressable.__init__(self)
-        CharacterCollection.__init__(self)
-        self.autofollow = False
-    
-    def join (self, actor):
-        """ [player action] player joins to the party"""
-        self.addCharacter(actor)
-        actor.party = self
-        
-    def leave (self, actor):
-        """ [player action] player leaves to the party"""
-        self.removeCharacter(actor)
-        actor.party = None
-        
-    def found (self, actor, keyword):
-        """ [player action] party is founded (sets keyword)"""
-        self.addSingularKeyword(keyword)
-        
-    def __cmp__ (self, other):
-        """ overwrite: returns true if other party has same
-        members """
-        if not isinstance(other,Party):
-            return False
-        for c in self.characters :
-            if c not in other.characters :
-                return False
-                break
-        return True
-
 
 
 class Player (GameHandler,
@@ -501,7 +453,7 @@ class Player (GameHandler,
     
     def __initdefaults__ (self):
         Character.__initdefaults__(self)
-        self.party = None
+        self.party = Party()
     
     @staticmethod
     def showTypeInfo(handler):
@@ -556,4 +508,49 @@ class Player (GameHandler,
         
         self.client.stopProducing()
 
+class Party (Addressable, 
+             CharacterCollection):
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Parties are a crowds of players/npcs, who play and solve
+    quests together
+    """
+    
+    autofollow = Boolean()
+    players    = BackRef(Player,'party')
+    
+    def __init__ (self):
+        Addressable.__init__(self)
+        CharacterCollection.__init__(self)
+        self.autofollow = False
+    
+    def join (self, actor):
+        """ [player action] player joins to the party"""
+        self.addCharacter(actor)
+        actor.party = self
+        
+    def leave (self, actor):
+        """ [player action] player leaves to the party"""
+        self.removeCharacter(actor)
+        actor.party = None
+        if not self.players:
+            self.__delete__()
+        
+    def found (self, actor, keyword):
+        """ [player action] party is founded (sets keyword)"""
+        self.addSingularKeyword(keyword)
+    
+    def getIdentifier (self):
+        """ returns an identifier for quest dungeons """ 
+        logins = []
+        for p in self.players:
+            logins.append(p.login)
+        s = sorted(logins)
+        return "|".join(s)
 
+    identifier = property(getIdentifier)

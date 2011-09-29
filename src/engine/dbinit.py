@@ -48,12 +48,13 @@ def createBaseTables ():
     Detail.createTable()
     
     Dungeon.createTable()
+    QuestDungeon.createTable()
     
     Item.createTable()
     ReusableItem.createTable()
     Exit.createTable()
     Room.createTable()
-    DefaultRoom.createTable()
+    UniqueRoom.createTable()
     
     LightSource.createTable()
     LightIntensityListener.createTable()
