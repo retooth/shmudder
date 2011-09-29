@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-from engine.ormapping import Persistent, BackRef, String, Reference, Boolean
-from abstract.causality import SignalListener, Signal
-from basic.rooms import Room
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -18,6 +14,10 @@ from basic.rooms import Room
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
+
+from engine.ormapping import Persistent, BackRef, String, Reference, Boolean
+from abstract.causality import SignalListener, Signal
+from basic.rooms import Room
 
 
 class Dungeon (Persistent):
@@ -34,20 +34,23 @@ class Dungeon (Persistent):
 
     rooms = BackRef(Room,"dungeon")
     
-    
     def __init__ (self):
         Persistent.__init__(self)
     
+    
     def getClone(self, identifier):
         return self
+    
     
     def addRoom (self,newr):
         """ Adds a new room to the dungeon """
         newr.dungeon = self
     
+    
     def removeRoom (self,r):
         """ Removes a room from the dungeon"""
         r.dungeon = None
+    
     
     def getCharacters (self):
         characters = []
@@ -60,6 +63,15 @@ class Dungeon (Persistent):
 
 class QuestTask (Persistent):
     
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Saves a pair (name,complete) and links it to
+    a QuestCompletionListener
+    """
     
     name  = String()
     complete = Boolean()
@@ -88,6 +100,7 @@ class TaskCompletionSignal (Signal):
         Signal.__init__(self)
         self.taskname = taskname
 
+
 class QuestCompletionListener (SignalListener):
 
     """ 
@@ -110,8 +123,10 @@ class QuestCompletionListener (SignalListener):
         SignalListener.__init__(self)
         self.dungeon = dungeon
     
+    
     def addTask (self, name):
         t = QuestTask(self,name)
+    
         
     def signalReceived (self, signal):
         if not isinstance(signal,TaskCompletionSignal):
@@ -121,6 +136,7 @@ class QuestCompletionListener (SignalListener):
             if t.name == name :
                 t.complete = True
         self.checkCompletion()
+         
          
     def checkCompletion (self):
         for t in self.tasks :
@@ -132,10 +148,27 @@ class QuestCompletionListener (SignalListener):
 
 class QuestDungeon (Dungeon):
     
+    """ 
+    @author: Fabian Vallon
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    QuestDungeons clone themselves for each player party.
+    This way several parties can solve a quest at the
+    same time 
+    """    
+    
     identifier = String()
     completionlistener = Reference()
     
+    def __init__ (self):
+        Dungeon.__init__(self)
+        self.completionlistener = QuestCompletionListener(self)
+    
+    
     def getClone(self,identifier):
+        """ Returns clone for identifier """
         dungeons = self.getAllInstances()
         for d in dungeons:
             if d.identifier == identifier:
@@ -145,16 +178,18 @@ class QuestDungeon (Dungeon):
         newd.identifier = identifier
         return newd
     
-    def __init__ (self):
-        Dungeon.__init__(self)
-        self.completionlistener = QuestCompletionListener(self)
     
     def addRoom (self,newr):
         Dungeon.addRoom(self, newr)
         newr.addListener(self.completionlistener)
     
+    
     def addTask (self, name):
+        """ Adds a task to QuestDungeon. Use
+        TaskCompletionSignal to flag it as solved """
         self.completionlistener.addTask(name)
     
+    
     def questComplete(self):
+        """[Event method] Gets invoked if quest is complete"""
         pass

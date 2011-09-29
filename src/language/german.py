@@ -1,10 +1,5 @@
 #!/usr/bin/python
 
-from language.universal import Context
-from basic.actions import *
-from basic.exceptions import *
-from abstract.exceptions import *
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -20,12 +15,16 @@ from abstract.exceptions import *
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from language.universal import Context
+from basic.actions import *
+from basic.exceptions import *
+from abstract.exceptions import *
+
 
 class CharacterChoiceContext (Context):
 
     def __init__ (self):
         Context.__init__(self)
-        
         self.addSemantics("waehle (.+)", chooseCharacter)
         self.addSemantics("info (.+)", showCharacterChoiceInfo)
         self.addExceptionHandling(UnknownAction, "Wie bitte ?")
@@ -46,8 +45,10 @@ class PasswordContext (Context):
         self.addSemantics("(.+)", password)
         self.addExceptionHandling(BadPassword, "Das Passwort ist falsch")
 
+
     def showWelcome (self, handler):
         handler.receiveMessage("Passwort:")
+
 
     def showGoodBye (self,handler):
         pass
@@ -61,8 +62,10 @@ class NameChoiceContext (Context):
         self.addExceptionHandling(PlayerExists, "Diesen Spieler gibt es bereits")
         self.addExceptionHandling(UnknownAction, "Spielernamen duerfen nur Zahlen und Buchstaben enthalten")
 
+
     def showWelcome (self, handler):
         handler.receiveMessage("Wie willst du heissen?")
+
 
     def showGoodBye (self,handler):
         pass
@@ -73,9 +76,11 @@ class PasswordChoiceContext (Context):
     def __init__(self):
         Context.__init__(self)
         self.addSemantics("(.+)", choosePassword)
+
         
     def showWelcome (self, handler):
         handler.receiveMessage("Bitte gib ein Passwort an:")
+
 
     def showGoodBye (self,handler):
         pass
@@ -84,8 +89,7 @@ class PasswordChoiceContext (Context):
 class BasicContext (Context):
     
     def __init__ (self):
-        Context.__init__(self)
-        
+        Context.__init__(self)        
         self.addSemantics("(osten)",walk)
         self.addSemantics("(westen)",walk)
         self.addSemantics("(norden)",walk)

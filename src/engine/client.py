@@ -42,6 +42,7 @@ class ShmudderProtocol(LineReceiver,object):
     def __init__(self):
         self._handler = None
 
+
     def setHandler(self, h):
         h.client = self
         self._handler = h
@@ -53,22 +54,18 @@ class ShmudderProtocol(LineReceiver,object):
     handler = property(fget = getHandler,\
                        fset = setHandler,\
                        doc  = "Protocols current handler")
+
     
-    def send (self,data):
-        
-        """ 
-        Sends data back to the client
-        """
-        
+    def send (self,data):        
+        """ Sends data back to the client """
         self.transport.write(data+"\r\n")
+
     
     def connectionMade(self):
-        
         """ 
         will be called, when a connection is made. it acquaints the
         protocol with the factory and initializes the login handler
         """
-
         # shake hands
         self.factory.clients.append(self)
         
@@ -76,12 +73,9 @@ class ShmudderProtocol(LineReceiver,object):
         lh = self.__class__.loginhandler()
         self.handler = lh
 
-    def lineReceived (self,data):
-        
-        """ 
-        will be called, when data arrives.
-        """
 
+    def lineReceived (self,data):
+        """ will be called, when data arrives."""
         # strip newlines and stuff
         data = data.rstrip()
         
@@ -89,16 +83,17 @@ class ShmudderProtocol(LineReceiver,object):
         handler = self.handler
         handler.handle(data)
         
-    def connectionLost(self, reason):
- 
-        """ Will be called, when client disconnects """
- 
-        self.factory.clients.remove(self)
         
+    def connectionLost(self, reason):
+        """ Will be called, when client disconnects """
+        self.factory.clients.remove(self)
+
+        # TODO: still a bit dirty. maybe set location
+        # and lastlocation at the same time in addChar, etc ?        
         # save last location
         if "location" in dir(self.handler):
             self.handler.lastlocation = self.handler.location
-            self.handler.location     = None
+            self.handler.location = None
 
 
 class ShmudderFactory(ServerFactory):
@@ -121,17 +116,13 @@ class GameHandler (object):
     and parses commands by context 
     """
     
-    
     def __init__ (self):
         self._context  = None
         self.client = None
-        
-    def setContext(self,c):
-        
-        """ 
-        Sets new context and invokes goodbye/welcome methods
-        """
     
+        
+    def setContext(self,c):    
+        """ Sets new context and invokes goodbye/welcome methods """
         # if old context exists, show goodbye messages
         if self._context != None :
             self._context.showGoodBye(self)
@@ -143,26 +134,21 @@ class GameHandler (object):
         if self._context != None :
             self._context.showWelcome(self)
                 
+                
     def getContext (self):
-   
-        """ 
-        Gets the current context
-        @rtype: context
-        """
-   
+        """ Gets the current context """
         return self._context        
 
     context = property(getContext,setContext)
 
-    def handle (self, command):
-        
+
+    def handle (self, command):   
         """ 
         Handles a command by the currently active context. 
         In particular, parses the raw string into an action 
         object and handles game exceptions (e.g. if an item 
         was not found)
         """
-        
         # try to do the action
         try:
             # get the current context and parse command
@@ -175,14 +161,10 @@ class GameHandler (object):
             
 
     def receiveMessage (self, message):
-        
         """ entry point for messages, that returned from the game """
-        
         client = self.client
-        
         if not client:
             return
-        
         client.send(message)
 
 
@@ -207,9 +189,11 @@ class LoginHandler (GameHandler):
         GameHandler.__init__(self)
         self.wannabe = None
     
+    
     def __contextinit__ (self):
         cls = type(self)
         self.context = cls.logincontext()
+    
     
     def switchToRegisterHandler (self):
         client = self.client
@@ -230,7 +214,6 @@ class RegisterHandler (GameHandler):
     suitable (context) types    
     """
 
-    
     playertypes     = []
     characterchoice = None
     passwordchoice  = None
@@ -247,30 +230,31 @@ class RegisterHandler (GameHandler):
         nmc = cls.namechoice()
         self._contextq = [nmc,pwc]
 
+
     def __contextinit__ (self):
         cls = type(self)
         plc = cls.characterchoice()
         self.context = plc
 
+
     def addChoice (self, context):
-        """ Adds an additional choice""" 
-        
+        """ Adds an additional choice"""         
         self._contextq.insert(-2, context)
+
 
     def nextContext (self):
         self.context = self._contextq.pop(0)
+
         
     def emergeWannabe (self,t):
         self.wannabe = t()
+
     
     @classmethod
-    def callPlayerType (cls,key):
-    
+    def callPlayerType (cls,key):    
         types = cls.playertypes
-        
         for t in types :
             if key in t.typekeywords :
                 return t
                 break
-            
         return None

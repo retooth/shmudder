@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-from basic.exceptions import *
-from engine.ormapping import Persistent, Integer, PickleType
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -18,13 +15,8 @@ from engine.ormapping import Persistent, Integer, PickleType
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-
-"""
-@author: Fabian Vallon 
-@license: U{GPL v3<http://www.gnu.org/licenses/>}
-@version: 0.1
-@since: 0.1
-"""
+from basic.exceptions import *
+from engine.ormapping import Persistent, Integer, PickleType
 
 class Improvable (Persistent):
     
@@ -51,24 +43,21 @@ class Improvable (Persistent):
         self.quality = 0
         self.maxquality = 0
 
-    def getPercentage (self):
-        
+
+    def getPercentage (self):    
         q = float(self.quality)
         m = float(self.maxquality)
-
         if not m :
             return
-
         return (q/m)*100
 
     percentage = property(fget = getPercentage,\
                           doc  = "Quality in percent" )
 
+
     def isPerfect (self):
-        
         max = self.maxquality
         q   = self.quality
-        
         # shouldn't need the >, but maybe there is
         # some strange behavior
         if max and max >= q:
@@ -78,14 +67,15 @@ class Improvable (Persistent):
     isperfect = property(fget = isPerfect,\
                          doc  = "True if quality is perfect")
 
+
     def isBroken (self):
-        
         if self.quality :
             return False
         return True
 
     isbroken = property(fget = isBroken,\
                         doc  = "True if quality is 0")
+
 
     def improve (self, actor, value):
 
@@ -105,6 +95,7 @@ class Improvable (Persistent):
         if nq == m :
             return self.qualityMaximum(actor)
 
+
     def impair (self, actor, value):
 
         """ 
@@ -121,6 +112,7 @@ class Improvable (Persistent):
         
         if not nq :
             self.qualityMinimum(actor)
+
     
     def qualityChanged (self,actor,old,new):
         
@@ -139,6 +131,7 @@ class Improvable (Persistent):
         """
         
         pass
+
     
     def qualityMinimum (self,actor):
         
@@ -147,8 +140,6 @@ class Improvable (Persistent):
         """
         
         pass
-
-
 
 
 class GradualImprovable (Improvable):
@@ -172,11 +163,13 @@ class GradualImprovable (Improvable):
         self.level = 0
         self.levelstops = {}
     
+    
     def getMaxLevel (self):
         return max(self.levelstops.keys())
     
     maxlevel = property(fget = getMaxLevel,\
                         doc  = "The highest level defined in levelstops")
+
 
     def improve (self, actor, value):
         
@@ -198,12 +191,14 @@ class GradualImprovable (Improvable):
             if currq >= nextq :
                 self.level += 1
                 return self.levelRaised(actor)
+      
         
     def levelRaised (self,actor):
         
         """[Event method] Gets invoked after improve() raised
         level.
         """
+    
     
     def resetQuality (self):
         

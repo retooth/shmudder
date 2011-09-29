@@ -1,7 +1,3 @@
-from basic.tasks import Fights
-from basic.exceptions import CantAttackThisCharacter
-from mixins.fights import FightFilter
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -17,6 +13,9 @@ from mixins.fights import FightFilter
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from basic.tasks import Fights
+from basic.exceptions import CantAttackThisCharacter
+from mixins.fights import FightFilter
 
 class MilitantCharacter (object):
     
@@ -26,9 +25,11 @@ class MilitantCharacter (object):
         self.fights = Fights(self)
         self.fights.start(1.0)
     
+    
     def __postload__ (self):
         self.fights = Fights(self)
         self.fights.start(1.0)
+    
     
     def getOpponents (self):
         return self.fights.opponents
@@ -36,10 +37,8 @@ class MilitantCharacter (object):
     opponents = property(getOpponents)
 
 
-    def attack (self,opponent):
-        
+    def attack (self,opponent):    
         """ this method will initiate a fight. """
- 
         if not ("fights" in dir(opponent) and \
                 "fights" in dir(self)) :
             raise CantAttackThisCharacter("") 
@@ -49,26 +48,22 @@ class MilitantCharacter (object):
         
     
     def inflictDefaultDamage (self,opponent):
-
         """ 
         interface specification. game designer has to overwrite this.
         fallback method for fights. if character doesn't carry any weapon
         this method will inflict the damage
         @raise NotImplementedError: always
         """
- 
         raise NotImplementedError(str(type(self)) + ": Lack of inflictDefaultDamage method")
 
 
     def inflictDamage (self,opponent):
-        
         """
         this method will be called in fights. it will forward the
         call to player's weapons or to the inflictDefaultDamage method
         if player doesn't carry any weapon
         @param opponent: opponent in fight 
-        """
-        
+        """        
         weaponfound = False
         
         for item in self.inventory.items:
@@ -84,14 +79,12 @@ class MilitantCharacter (object):
     
     
     def sufferSimpleDamage (self,actor,value,constitutiontype):
-
         """
         will substract <value> points from player's constitution
         
         @param value: damage value (int)
         @param constitutiontype: type of constitution
         """
-        
         for filter in self.fightfilters:
             value = filter.filter(self,actor,value)
         
@@ -101,7 +94,6 @@ class MilitantCharacter (object):
         
     
     def getFightFilters (self):
-        
         f = []
         for item in self.inventory.items :
             if isinstance(item,FightFilter) and item.inuse :
@@ -109,6 +101,7 @@ class MilitantCharacter (object):
         return f
           
     fightfilters = property(getFightFilters)
+    
     
     def die (self) :
         

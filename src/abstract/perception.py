@@ -1,6 +1,3 @@
-from engine.ormapping import Persistent, PickleType, String
-from abstract.exceptions import *
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -16,6 +13,8 @@ from abstract.exceptions import *
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from engine.ormapping import Persistent, PickleType, String
+from abstract.exceptions import *
 
 class Addressable (Persistent):
     
@@ -40,20 +39,16 @@ class Addressable (Persistent):
     
         
     def addSingularKeyword (self,keyword):
-
         """ Adds a singular keyword """
-
         self.skeywords = self.skeywords + [keyword]
 
+
     def addPluralKeyword (self,keyword):
-
         """ Adds a plural keyword """
-
         self.pkeywords = self.pkeywords + [keyword]
     
+    
     def call (self,keyword):
-
-
         """ 
         Responds to singular and plural nouns. 
         - Returns 0, if thing doesn't answer to the name of keyword
@@ -61,15 +56,11 @@ class Addressable (Persistent):
         - Returns 2, if thing is called AS PLURAL by keyword
         @rtype: int 
         """
-        
-
         if keyword in self.skeywords:
             return 1
         if keyword in self.pkeywords:
             return 2
         return 0
-
-
 
 
 class AddressableCollection (Persistent):
@@ -84,7 +75,6 @@ class AddressableCollection (Persistent):
     """
     
     def callCollectionItems (self, keyword, collection):
-
         """ 
         Gets all items in collection, that respond to keyword. Returns
         only a one-item list, if keyword was singular
@@ -93,7 +83,6 @@ class AddressableCollection (Persistent):
          
         @rtype: list<Addressable>
         """
-
         found = []
         for thing in collection:
             
@@ -120,6 +109,15 @@ class AddressableCollection (Persistent):
 
 class Perceivable (Addressable):
     
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Implements player actions for visual nature,
+    smell, surface feeling and sound
+    """
     
     shortdescription = String()
     longdescription  = String()
@@ -134,6 +132,7 @@ class Perceivable (Addressable):
         self.odor = ''
         self.feeling = ''
         self.sound = ''
+    
         
     def showShort (self, actor):
         if self.shortdescription:
@@ -141,23 +140,27 @@ class Perceivable (Addressable):
             return
         raise Invisible("")
 
+
     def showLong (self, actor):
         if self.longdescription:
             actor.receiveMessage(self.longdescription)
             return
         raise Invisible("")
 
+
     def smell (self, actor):
         if self.odor:
             actor.receiveMessage(self.odor)
             return
         raise NoOdor("")
+
         
     def touch (self, actor):
         if self.feeling:
             actor.receiveMessage(self.feeling)
             return
         raise NoFeeling ("")
+
             
     def listen (self, actor):
         if self.sound:

@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-from abstract.perception import Perceivable, AddressableCollection
-from engine.ormapping import Reference, BackRef, Boolean
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -18,6 +15,8 @@ from engine.ormapping import Reference, BackRef, Boolean
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from abstract.perception import Perceivable, AddressableCollection
+from engine.ormapping import Reference, BackRef, Boolean
 
 class Detail (Perceivable):
     
@@ -31,19 +30,15 @@ class Detail (Perceivable):
     a better description of things in your MUD
     """
 
-    
     collection = Reference()
     explicit   = Boolean()
     
     def __init__ (self):
         Perceivable.__init__(self)
-    
         self.explicit = False
         """ Set this to True, if you want your Detail
         explicitely listed in room descriptions.
         (Don't forget to implement showShort)"""
-
-
 
 
 class DetailCollection (AddressableCollection):
@@ -62,15 +57,18 @@ class DetailCollection (AddressableCollection):
     def __init__ (self):
         AddressableCollection.__init__(self)
 
+
     def addDetail (self, detail):
 
         """ Adds a detail to the collection """
         detail.collection = self
+
         
     def removeDetail (self, detail):
 
         """Removes a detail from the collection"""
         detail.collection = None
+
         
     def callDetails (self, keyword):
         
@@ -84,6 +82,7 @@ class DetailCollection (AddressableCollection):
         details = self.details
         details = self.callCollectionItems(keyword, details)
         return details
+
     
     def showDetails (self, actor):
         

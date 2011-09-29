@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import sqlite3, pickle
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -17,6 +15,8 @@ import sqlite3, pickle
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+
+import sqlite3, pickle
 
 """
 This module implements a object relational mapping suitable for multiple inheritance
@@ -45,10 +45,12 @@ class OffcutList (object):
         # indices of gaps
         self.gaps = []
     
+    
     def getMaxFree (self):
         return max(self.objects.keys())+1
     
     maxfree  = property(fget=getMaxFree,doc="Free key with greatest value")
+    
         
     def getFreeSpot (self):
         if self.gaps:
@@ -57,11 +59,12 @@ class OffcutList (object):
     
     freespot = property(getFreeSpot)
     
+    
     def __getitem__ (self, i):
         return self.objects[i]
 
+
     def __setitem__ (self, i, value):
-        
         oldmaxfree = self.maxfree
         self.objects[i] = value
          
@@ -73,8 +76,7 @@ class OffcutList (object):
             self.gaps.remove(i)
         
         
-    def __delitem__ (self, index):
-        
+    def __delitem__ (self, index):        
         del self.objects[index]
         
         if index < self.maxfree:
@@ -82,16 +84,15 @@ class OffcutList (object):
         
         self.gaps = filter(lambda x: x < self.maxfree, self.gaps)
         
-    def append (self, value):
         
+    def append (self, value):
         free = self.freespot
         self[free] = value
         return free
 
+
     def values (self):
         return self.objects.values()
-
-
    
         
 class Store (object):
@@ -99,7 +100,6 @@ class Store (object):
     __shared_state = {}
     
     def __init__ (self, file=None):
-        
         if file :
             self.__dict__   = Store.__shared_state
             self.objects    = OffcutList()
@@ -109,9 +109,8 @@ class Store (object):
             self.__dict__   = Store.__shared_state
     
     def add (self,o):
-        
         """ dumps basic data about o into the database """
-        
+        # TODO: maybe refactor this to Persitent
         o.id = self.objects.append(o)
         
         # run a bottom up BFS through the object hierarchy
@@ -157,14 +156,11 @@ class Store (object):
                                 " (id,_class) values (?,?)",t)
         
         
-    
     def load (self,locals):
-        
         """
         Loads all store objects into memory. Should be called like
         this: mystore.load(locals())
         """
-        
         all = self.cursor.execute("select * from Persistent").fetchall()
         
         # built all objects known in database
@@ -186,7 +182,6 @@ class Store (object):
                         
             newobj.id = id
             
-        
         # synchronize objects to database
         
         tabletuples = self.cursor.execute("select tbl_name from sqlite_master").fetchall()
@@ -223,8 +218,8 @@ class Store (object):
             if "__postload__" in dir(o):
                 o.__postload__()
         
-    def update (self, table, id, var, value):
         
+    def update (self, table, id, var, value):
         t = (value,id)
         self.cursor.execute("update " + table + " set " + var + "= ? where id = ?;",t)
             
@@ -244,14 +239,13 @@ class Reference (object):
         
         return instance.store.objects[instance.__dict__[self.real]]
 
+
     def __set__(self, instance, value):
         if not value :
             instance.__dict__[self.real] = 0
         else :
             instance.__dict__[self.real] = value.id
         instance.__update__(self.real)
-
-
 
 
 class PickleType (object):
@@ -292,7 +286,6 @@ class String (object):
         instance.__update__(self.real)
 
 
-
 class Integer (object):
 
     def __init__ (self):
@@ -304,7 +297,6 @@ class Integer (object):
     def __set__(self, instance, value):
         instance.__dict__[self.real] = value
         instance.__update__(self.real)
-
 
 
 class Boolean (object):
@@ -329,7 +321,6 @@ class Boolean (object):
         instance.__update__(self.real)
 
 
-
 class BackRef (object):
     
     def __init__ (self,itemclass,ref):
@@ -344,9 +335,6 @@ class BackRef (object):
 
     def __set__(self, instance, value):
         raise StandardError ("Read-Only")
-
-
-
 
 
 class PersistentMeta (type):

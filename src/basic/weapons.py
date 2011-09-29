@@ -1,4 +1,4 @@
-from basic.items import ReusableItem
+#!/usr/bin/python
 
 #    This file is part of Shmudder.
 #
@@ -15,6 +15,7 @@ from basic.items import ReusableItem
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from basic.items import ReusableItem
 
 class Weapon (ReusableItem):
     
@@ -29,6 +30,7 @@ class Weapon (ReusableItem):
     
     def __init__ (self):
         ReusableItem.__init__(self)
+    
     
     def inflictDamage (self, actor, opponent): 
         """ should implement damage in fights """
@@ -51,25 +53,28 @@ class AmmoDrivenWeapon (Weapon):
         Weapon.__init__(self)
         self.nextammo = None
     
+    
     def __postload__ (self):
         self.nextammo = None
 
+
     def isSuitableAmmo (self,a):
-        """
-        should return bool, if ammo a is suitable
-        """
+        """ should return bool, if ammo a is suitable """
         clsn = self.__class__.__name__
         raise NotImplementedError(clsn+": Lack of isSuitableAmmo method")
+
 
     def outOfAmmo (self, actor):
         """ [event method] gets invoked, if no ammo
         is in the inventory """
         pass
+
     
     def ammoNotPresent (self, actor):
         """ [event method] gets invoked, if ammo is not
         in a collection used by the player """
         pass
+
 
     def inflictDamage(self, actor, opponent):
 

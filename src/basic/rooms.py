@@ -44,8 +44,11 @@ class Exit (Addressable):
         self.anchor    = anchor
         self.direction = direction
         
+        
     def __str__ (self):
         return self.skeywords[0]
+
+
 
 class Room (Perceivable,
             DetailCollection,
@@ -97,10 +100,9 @@ class Room (Perceivable,
         
         c.location = self
 
-    def removeCharacter(self, c):
-        
+
+    def removeCharacter(self, c):        
         """ Removes character c from the room """
-        
         CharacterCollection.removeCharacter(self, c)
         
         if "emit" in dir(c):
@@ -123,59 +125,48 @@ class Room (Perceivable,
         details = self.details
         return i in (items+chars+details)
     
+    
     def receiveMessage (self, message, exceptc=[]):
-        
         """ 
         shares message with players in the room.
         @param exceptc: a list of players, that will be omitted
         """
-        
         for c in self.characters:
             if c not in exceptc:
                 c.receiveMessage(message)
     
+    
     def hasExit (self, exitname):
-        
-        """
-        For convenience
-        """
-        
+        """ For convenience """
         if exitname in self.exits:
             return True
         return False
     
+    
     def connect(self, neighbor, *dirkeys):
-        
         """
         Connects another room to this one.
         @param *dirkeys: keywords for direction
         """
-        
         e = Exit(self,neighbor)
         for keyword in dirkeys :
             e.addSingularKeyword(keyword)
         
 
     def showLong (self, actor):
-
         """ This method is triggered by the 'look around'
         command. It implements the standard MUD view of
         a room (Description of the Room, List of Items,
         List of Characters). """ 
-
-        
         self.showShort(actor)
         self.showItems(actor)
         self.showDetails(actor)
         self.showOtherCharacters(actor)
 
-    def leave(self, actor, keyword):
-        
+
+    def leave(self, actor, keyword):        
         """ This method is called, when a player decides
-        to exit the room by direction keyword. 
-        
-        @raise NoSuchDirection: If direction isn't in exit list
-        """
+        to exit the room by direction keyword. """
         
         # TODO: party autofollow
         
@@ -202,27 +193,21 @@ class Room (Perceivable,
                 newplace = clone.rooms[rindex]
             
         self.removeCharacter(actor)
-        
         newplace.addCharacter(actor)
-            
-        
+
     
     def leavePanically (self, actor):
-
         """ convenience method to leave the
         room in a random direction """
-
         if self.exits :
             dir = choice(self.exits)
             self.leave(actor,dir)
         
     
     def leaveVeryPanically (self, actor, panic):
-        
         """ recursive version of leavePanically.
         recursion depth is described as int in panic
         """
-    
         # do as many room changes
         # as said in panic
         if panic > 0 :
@@ -233,13 +218,10 @@ class Room (Perceivable,
             # recursion
             newroom = actor.location
             newroom.leaveVeryPanically(actor,(panic-1))
+
         
     def teleport (self,actor,hop):
-        
-        """ convenience method to jump to another room
-        (hop)
-        """
-        
+        """ convenience method to jump to another room """
         self.removeCharacter(actor)
         hop.addCharacter(actor)
         
@@ -269,10 +251,12 @@ class UniqueRoom (Room):
             cls._the_instance = object.__new__(cls)
         return cls._the_instance
  
+ 
     def __init__(self):
         if not self.singletonready:
             self.__singletoninit__()
             self.singletonready = True
+ 
         
     def __singletoninit__ (self):
         Room.__init__ (self)

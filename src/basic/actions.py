@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from basic.exceptions import CharacterNotFound
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -210,6 +208,8 @@ def showRoom (player, regex, arguments):
 
 # fights
 #################################################
+
+from basic.exceptions import CharacterNotFound
 
 def kill (player,regex,arguments):
 

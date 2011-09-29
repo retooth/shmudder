@@ -20,21 +20,26 @@ from twisted.internet.task import LoopingCall
 
 class Fights (LoopingCall):
     
+    
     def __init__ (self,fighter):
         LoopingCall.__init__(self, self.run)
         self.fighter = fighter
         self.fqueue = []    
+    
     
     def getOpponents(self):
         return self.fqueue
     
     opponents = property(getOpponents)
     
+    
     def addEnemy (self,enemy):
         self.fqueue.append(enemy)
     
+    
     def removeEnemy (self,enemy):
         self.fqueue.remove(enemy)
+    
     
     def reset (self):
             
@@ -42,6 +47,7 @@ class Fights (LoopingCall):
             enemy.fights.removeEnemy(self.fighter)
     
         self.fqueue = []
+    
     
     def run (self):
         

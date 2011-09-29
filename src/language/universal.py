@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-import re
-from basic.exceptions import UnknownAction
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -18,6 +15,8 @@ from basic.exceptions import UnknownAction
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+from basic.exceptions import UnknownAction
 
 class Semantics (object):
     
@@ -49,36 +48,32 @@ class Context (object):
     context specific exceptions. """
     
     def __init__ (self):
-
-        
         self.semantics = []
-        
         # a dict<type,str>, that contains exception types as
         # keys and strings as values
         self.exceptionlang = {}
+    
     
     def addSemantics (self, regex, actionf):
         s = Semantics(regex, actionf)
         self.semantics.append(s)
 
+
     def addExceptionHandling (self,exceptiontype,answer):
         self.exceptionlang[exceptiontype] = answer
+
     
-    def parse (self,command):
-        
+    def parse (self,command):        
         """ parses a string according to context semantics """
-        
         for s in self.semantics:
             arguments = s.match(command)
             if arguments :
                 return (s.actionf,s.regex,arguments)
                 break
-        
         raise UnknownAction("")
         
     
     def handle (self,player,error):
-        
         """ handles context specific errors """
         # get type
         errtype = type(error)
@@ -88,6 +83,7 @@ class Context (object):
         
     def showWelcome (self, handler):
         raise NotImplementedError(str(type(self))+": Lack of showWelcome() method")
+    
     
     def showGoodBye (self, handler):
         raise NotImplementedError(str(type(self))+": Lack of showGoodbye() method")

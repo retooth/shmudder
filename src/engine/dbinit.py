@@ -29,34 +29,31 @@ def createBaseTables ():
     M2M_EnviromentEmitter.createTable()
     M2M_EnviromentListener.createTable()
     
-    Improvable.createTable()
-    GradualImprovable.createTable()
-    Attribute.createTable()
-    AttributeCollection.createTable()
-    
     Addressable.createTable()
     Perceivable.createTable()
+    Improvable.createTable()
+    GradualImprovable.createTable()
     
+    Attribute.createTable()
+    AttributeCollection.createTable()
     Constitution.createTable()
-    
     
     BodyPart.createTable()
     Character.createTable()
     Party.createTable()
     Player.createTable()
-    
     Detail.createTable()
     
+    Item.createTable()
+    ReusableItem.createTable()
+    
+    Exit.createTable()
+    Room.createTable()
+    UniqueRoom.createTable()
     Dungeon.createTable()
     QuestDungeon.createTable()
     QuestTask.createTable()
     QuestCompletionListener.createTable()
-    
-    Item.createTable()
-    ReusableItem.createTable()
-    Exit.createTable()
-    Room.createTable()
-    UniqueRoom.createTable()
     
     LightSource.createTable()
     LightIntensityListener.createTable()

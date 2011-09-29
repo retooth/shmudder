@@ -1,6 +1,3 @@
-from ormapping import Persistent, String, Reference
-from hashlib import sha512
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -15,6 +12,9 @@ from hashlib import sha512
 #
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
+
+from ormapping import Persistent, String, Reference
+from hashlib import sha512
 
 class User (Persistent):
     
@@ -35,6 +35,7 @@ class User (Persistent):
         Persistent.__init__(self)
         self.login = ""
         self.lastlocation = None
+    
     
     def getPassword (self):
         return self.sha512password

@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from twisted.internet import reactor
-
 #    This file is part of Shmudder.
 #
 #    Shmudder is free software: you can redistribute it and/or modify
@@ -18,6 +16,8 @@ from twisted.internet import reactor
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from twisted.internet import reactor
+
 class MUDServer ():
     
     """ 
@@ -31,19 +31,14 @@ class MUDServer ():
     def __init__ (self):
         self.factory = None
 
-
     def run (self,port):
     
         """ 
-            Starts the game controller and the underlying server
-            
-            @param port: an integer to specify the port, the server should run on
-            @raise AttributeError: if controller wasn't initialized
-
+        Starts the server    
+        @param port: an integer to specify the port, the server should run on
         """ 
 
         print '\033[1;42mStatus\033[1;m Starting GameController'
-        
         
         factory = self.factory
         

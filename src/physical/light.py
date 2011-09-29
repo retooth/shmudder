@@ -1,7 +1,4 @@
-from abstract.causality import Signal, SignalEmitter, SignalListener
-from basic.items import ReusableItem
-from basic.rooms import Room
-from engine.ormapping import Reference, Integer
+#!/usr/bin/python
 
 #    This file is part of Shmudder.
 #
@@ -18,12 +15,18 @@ from engine.ormapping import Reference, Integer
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
+from abstract.causality import Signal, SignalEmitter, SignalListener
+from basic.items import ReusableItem
+from basic.rooms import Room
+from engine.ormapping import Reference, Integer
+
 
 class LightIntensityChange (Signal):
     
     def __init__ (self):
         Signal.__init__(self)
         self.intensity = 0
+        
         
 class LightSource (ReusableItem, SignalEmitter):
     
@@ -34,23 +37,27 @@ class LightSource (ReusableItem, SignalEmitter):
         SignalEmitter.__init__(self)
         self.lightintensity = 0
     
+    
     def use (self, actor):
         ReusableItem.use(self, actor)
         light = LightIntensityChange()
         light.intensity = self.lightintensity
         self.emit(light)
     
+    
     def emitEntrySignal (self):
         if self.isInUse():
             light = LightIntensityChange()
             light.intensity = self.lightintensity
             self.emit(light)
+    
             
     def emitExitSignal(self):
         if self.isInUse():
             light = LightIntensityChange()
             light.intensity = - self.lightintensity
             self.emit(light)
+    
         
     def unuse (self, actor):
         ReusableItem.unuse(self, actor)
@@ -60,7 +67,6 @@ class LightSource (ReusableItem, SignalEmitter):
         
 
 class LightIntensityListener (SignalListener):
-    
         
     """ 
     @author: Fabian Vallon
@@ -74,22 +80,18 @@ class LightIntensityListener (SignalListener):
     
     intensity = Integer()
     
-    
     def __init__ (self):
         SignalListener.__init__(self)
         self.intensity = 0
+    
         
     def signalReceived (self,signal):
         if isinstance(signal,LightIntensityChange):
             self.intensity += signal.intensity
     
-
-
         
 class IlluminatedRoom (Room):
-    
-    
-        
+            
     """ 
     @author: Fabian Vallon
     @license: U{GPL v3<http://www.gnu.org/licenses/>}
@@ -100,7 +102,6 @@ class IlluminatedRoom (Room):
     interact with items, that derive from LightSource
     """
     
-    
     lil = Reference()
     
     def __init__ (self):
@@ -108,9 +109,11 @@ class IlluminatedRoom (Room):
         li = LightIntensityListener()
         self.lil = li
         self.addListener(li)
+    
         
     def getLightIntensity(self):
         return self.lil.intensity
+    
     
     def setLightIntensity(self,li):
         self.lil.intensity = li

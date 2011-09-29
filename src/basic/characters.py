@@ -46,8 +46,6 @@ class BodyPart (Addressable) :
         self.item = None
 
 
-
-
 class Attribute (Improvable,
                  Addressable):
     
@@ -68,21 +66,18 @@ class Attribute (Improvable,
         Addressable.__init__(self)
         self.collection = None
 
+
     def improve (self,actor,value):
-        
         """
         [player action] Gains attribute by value. Stops at maximum 
         and calls qualityMaximum() if necessary. Checks, if collection
         allows improvement at current time.
         """
-        
         if self.collection.allowsimprovement:
             Improvable.improve(self, actor, value)
             self.collection.bonus = self.collection.bonus - 1 
         else :
             raise ImprovementNotAllowed("")
-
-
 
 
 class AttributeCollection (AddressableCollection):
@@ -99,7 +94,6 @@ class AttributeCollection (AddressableCollection):
     to disable this feature, set bonus to -1
     """
 
-    
     attributes = BackRef(Attribute,"collection")
     bonus      = Integer()
     character  = Reference()
@@ -108,32 +102,26 @@ class AttributeCollection (AddressableCollection):
         AddressableCollection.__init__(self)
         self.bonus = 0
 
-    def allowsImprovement (self):
-        
+
+    def allowsImprovement (self):        
         if self.bonus > 0 or self.bonus < 0:
             return True
         return False
 
     allowsimprovement = property(fget=allowsImprovement,doc="True if bonus > 0 or feature disabled")
     
-    def addAttribute (self, a):
-
-        """
-        Adds an attribute to the collection    
-        """
     
+    def addAttribute (self, a):
+        """ Adds an attribute to the collection """
         a.collection = self
 
-    def removeAttribute (self, a):
 
-        """
-        Removes attribute a from the collection
-        """
-    
+    def removeAttribute (self, a):
+        """Removes attribute a from the collection"""
         a.collection = None
 
+
     def callAttributes(self,keyword):
-        
         """ 
         Calls every attribute in collection by keyword and
         returns responding attributes
@@ -141,12 +129,9 @@ class AttributeCollection (AddressableCollection):
         @param keyword: keyword, that should be checked 
         @rtype: list<Attribute>
         """
-        
         attributes = self.attributes
         attributes = self.callCollectionItems(keyword, attributes)
         return attributes
-
-
 
 
 class Constitution (Improvable,
@@ -170,18 +155,14 @@ class Constitution (Improvable,
         Addressable.__init__(self)
     
     def reset (self):
-        
         """ 
         Simply sets quality to maxquality
         
         @Warning: Doesn't call qualityMaximum or
         qualityChanged
         """
-        
         self.quality = self.maxquality
         
-
-
 
 class VitalConstitution (Constitution):
     
@@ -195,7 +176,6 @@ class VitalConstitution (Constitution):
     and invokes the die() method on the linked character
     """
     
-    
     def __init__ (self):
         Constitution.__init__ (self)
     
@@ -203,11 +183,8 @@ class VitalConstitution (Constitution):
         self.character.die()
 
 
-
-
 class Character (Perceivable,
                  DetailCollection):
-
 
     """ 
     @author: Fabian Vallon 
@@ -218,7 +195,6 @@ class Character (Perceivable,
     Character class for players and NPCs
     """
 
-
     defaultlocation = Reference()
     location        = Reference()
     inventory       = Reference()
@@ -228,50 +204,37 @@ class Character (Perceivable,
     
     constitution      = BackRef(Constitution,"character")
     unsortedbodyparts = BackRef(BodyPart,"character")
-    
-    
+      
     def __init__ (self):
-        
         DetailCollection.__init__(self)
         Perceivable.__init__(self)
-        # place pointers
         self.defaultlocation = None
         self.location = None
-    
         self.communicator = None
     
     def __initdefaults__ (self):
-
         """ Sets character attributes to basic defaults """
-        
         self.inventory = Inventory()
         self.npcparty = Party()
         self.attributeset = AttributeCollection()
            
             
     def addBodyPart (self, bp):
-
         """ Adds a body part to the character """
-    
         bp.character = self
 
     def removeBodyPart (self, bp):
-
         """ Removes a body part from the character """
-    
         bp.character = None
 
     def getBodyParts (self):
-        
         # this method will be called by reusable.use(). by standard
         # an item will be unused, when another item wants to take it's
         # place. this method will make sure, that free body parts will
         # be prefered, so an unuse will only happen, if it's necessary
-        
         bplist = self.unsortedbodyparts
         
         # sort every body part into 'free' and 'used'
-        
         freebp = []
         usedbp = []
         
@@ -282,46 +245,39 @@ class Character (Perceivable,
             else :
                 usedbp.append(bp)
         
-        # rebuild bodyparts list by to categories
+        # rebuild body parts list by two categories
         newlist = freebp + usedbp
         return newlist
         
     bodyparts = property(fget = getBodyParts,\
                          doc  = "Character's bodyparts (unused first)")
 
+
     def callBodyParts (self, keyword):
         return self.callCollectionItems(keyword, self.bodyparts)
     
     
-    def addConstitution (self,c):
-        
+    def addConstitution (self,c):        
         """Adds constitution to the character"""
         c.character = self
 
 
     def removeConstitution (self,c):
-        
         """Removes constitution from the Character"""
         c.character = None
 
              
     def getConstitutionOfType (self,ctype):
-        
         """
         will return constitution object for type <ctype>
-        
         @rtype: constitution or None
         """
-        
-        # for convenience
-        
         clist = self.constitution
         for c in clist:
             if isinstance(c,ctype):
                 return c
                 break
-        return None
-    
+        return None    
 
 
     def vanish (self):
@@ -346,9 +302,7 @@ class Character (Perceivable,
          
         pass    
         
-
-
-
+        
 class CharacterCollection (AddressableCollection):
 
     """ 
@@ -367,42 +321,36 @@ class CharacterCollection (AddressableCollection):
     def __init__(self):
         AddressableCollection.__init__(self)
 
-    def addCharacter (self, c):
 
+    def addCharacter (self, c):
         """ Adds character to collection """
         c.location = self
         
 
     def removeCharacter (self, c):
-
         """ Removes character from the collection """
-
         c.location = None      
 
-    def callCharacters (self,keyword):
-        
+
+    def callCharacters (self,keyword):  
         """ 
         Calls every character in collection by keyword and
         returns responding characters
-        
         @rtype: list<Character>
         """
-        
         chars = self.characters
         chars = self.callCollectionItems(keyword,chars)
         return chars
     
-    def showCharacters (self,actor):
     
+    def showCharacters (self,actor):
         """ Shows every character in collection """
-        
         for c in self.characters :
             c.showShort(actor)
     
-    def showOtherCharacters (self,actor):
     
+    def showOtherCharacters (self,actor):
         """ Shows every character in collection except actor """
-        
         for c in self.characters :
             if c != actor :
                 c.showShort(actor)
@@ -437,8 +385,7 @@ class Player (GameHandler,
     @version: 0.1
     @since: 0.1
     """
-    
-    
+        
     party = Reference()
     
     def __init__ (self):
@@ -448,65 +395,62 @@ class Player (GameHandler,
         User.__init__(self)
         self._context = None
     
+    
     def __postload__ (self):
         self._context = None
+    
     
     def __initdefaults__ (self):
         Character.__initdefaults__(self)
         self.party = Party()
     
+    
     @staticmethod
-    def showTypeInfo(handler):
-        
+    def showTypeInfo(handler):    
         """
         should show some info about the player type
-        
         @raise NotImplementedError: always 
         """
-        
         raise NotImplementedError("Lack of static showTypeInfo method")
      
-    def showInfoScreen (self):
-        
+     
+    def showInfoScreen (self):    
         """
         should show an general info
         screen about the player.
-        
         @raise NotImplementedError: always 
         """
-        
         raise NotImplementedError ("Lack of showInfoScreen method")
         
-    def choose (self,handler):
         
+    def choose (self,handler):
         """ [registerhandler action] gets invoked, if
         player creation process is done """
-        
         handler.client.handler = self
         self.location = self.defaultlocation
     
-    def wakeup (self, handler):
-        
+    
+    def wakeup (self, handler):    
         """ [loginhandler action] gets invoked, if
         player has successfully logged in """
-        
         handler.client.handler = self
         self.location = self.lastlocation
         self.__contextinit__()
+    
     
     def showShort (self,actor):
         name = self.skeywords[0]
         actor.receiveMessage(name)
 
-    def logout (self):
-        
+
+    def logout (self):        
         """
         [player action] disconnects the client
         @warning: when overwriting, send messages
         BEFORE calling the supermethod
         """
-        
         self.client.stopProducing()
+
 
 class Party (Addressable, 
              CharacterCollection):
@@ -528,11 +472,13 @@ class Party (Addressable,
         Addressable.__init__(self)
         CharacterCollection.__init__(self)
         self.autofollow = False
+
     
     def join (self, actor):
         """ [player action] player joins to the party"""
         self.addCharacter(actor)
         actor.party = self
+
         
     def leave (self, actor):
         """ [player action] player leaves to the party"""
@@ -541,9 +487,11 @@ class Party (Addressable,
         if not self.players:
             self.__delete__()
         
+
     def found (self, actor, keyword):
         """ [player action] party is founded (sets keyword)"""
         self.addSingularKeyword(keyword)
+    
     
     def getIdentifier (self):
         """ returns an identifier for quest dungeons """ 

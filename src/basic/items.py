@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Addressable, Perceivable, AddressableCollection
+from abstract.perception import Perceivable, AddressableCollection
 from basic.details import DetailCollection
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
@@ -38,16 +38,17 @@ class Item (DetailCollection,
     - loose (will be triggered by Inventory.clear())
     """
 
-
     collection = Reference()
 
     def __init__(self):
         DetailCollection.__init__(self)
         Perceivable.__init__(self)
         self.collection = None
+
     
     def use (self):
         raise UnusableItem("")
+
     
     def isInUse (self):
         """ [internal] Just a default to avoid type checking
@@ -55,19 +56,17 @@ class Item (DetailCollection,
         """
         return False
 
+
     def take (self,actor):
-
         """ [player action] Moves item from room to inventory """
-
         room = actor.location
         inv  = actor.inventory
         room.removeItem(self)
         inv.addItem(self)
 
-    def throwAway (self,actor):
 
+    def throwAway (self,actor):
         """ [player action] Moves item from inventory to room """
-    
         # if an item is in use, it should be unused first
         if self.isInUse() :
             self.unuse(actor)
@@ -90,11 +89,10 @@ class Item (DetailCollection,
         inv2 = receiver.inventory
         inv.removeItem(self)
         inv2.addItem(self)
+
         
     def putInto (self,actor,container):
-
         """ [player action] Puts item into container """
-
         if not isinstance(container,ItemCollection):
             raise NotABin("")
 
@@ -107,28 +105,21 @@ class Item (DetailCollection,
 
         
     def takeOut (self,actor):
-
         """ [player action] Takes item out of container """
-        
         actor.inventory.addItem(self)
 
     def loose (self, actor):
-        
         """ [player action] Looses item """
-        
         # free bodyparts (suppress unuse messages)
         bodyparts = actor.bodyparts
-        
         for bp in bodyparts:
             if bp.item == self :
                 bp.item = None
-                
         self.inuse = False
         
         room = actor.location
         room.addItem(self)
         
-
 
 class ItemCollection (AddressableCollection):
 
@@ -146,24 +137,21 @@ class ItemCollection (AddressableCollection):
     def __init__(self):
         AddressableCollection.__init__(self)
 
-    def addItem (self, i):
 
+    def addItem (self, i):
         """ adds item to collection """
         i.collection = self
 
 
     def removeItem (self, i):
-
         """ removes item from collection """
         i.collection = None
 
-    def getItems (self):
-        
-        unsorted = self.unsorteditems
-        
+
+    def getItems (self):        
         used = []
         unused = []
-        for ui in unsorted :
+        for ui in self.unsorteditems :
             if ui.isInUse():
                 used.append(ui)
             else :
@@ -191,25 +179,20 @@ class ItemCollection (AddressableCollection):
     allitems = property(fget = getAllItems,\
                         doc  = "Searchs recursively for items in collection")
 
-    def callItems (self,keyword):
-        
+
+    def callItems (self,keyword):        
         """ 
         Calls every item in collection by keyword and
         returns responding items
-        
         @rtype: list<Item>
         """
-        
         items = self.items
         items = self.callCollectionItems(keyword,items)
         return items
+
     
     def showItems (self,actor):
-    
-        """ 
-        Shows every item in collection, groups groupable items
-        """
-                
+        """ Shows every item in collection, groups groupable items"""
         # initialize a counting dictionary for
         # groupable items
         count = defaultdict(int)
@@ -232,8 +215,6 @@ class ItemCollection (AddressableCollection):
             itemtype.showGroup(actor,amount)
 
 
-
-
 class ChooseyItemCollection (ItemCollection):
     
     """ 
@@ -252,13 +233,10 @@ class ChooseyItemCollection (ItemCollection):
         """Should return bool, if i is permitted in this collection"""
         raise NotImplementedError("ChooseyItemCollection must have a permits method")
     
-    def addItem (self, i):
-        
+    def addItem (self, i):        
         if not self.permits(i):
             raise UnsuitableBin("")
         ItemCollection.addItem(self, i)
-
-
 
 
 class ReusableItem (Item):
@@ -271,8 +249,7 @@ class ReusableItem (Item):
 
     Implements player action methods for item usage
     """
-    
-    
+        
     necessaryslots = PickleType()
     inuse          = Boolean()
     
@@ -281,20 +258,17 @@ class ReusableItem (Item):
         self.necessaryslots = []
         self.inuse = False
     
-    def addBodyRequirement (self,keyword):
-        
+    
+    def addBodyRequirement (self,keyword):    
         """
         adds a body requirement for this item (keyword should
         be str and match a body part)
         """
-        
         self.necessaryslots = self.necessaryslots + [keyword]
 
-    def use (self, actor):
-        
-        """ 
-        [player action] Uses the item (if possible) """
-        
+
+    def use (self, actor):        
+        """ [player action] Uses the item (if possible) """
         for slot in self.necessaryslots:
         
             slots = actor.callBodyParts(slot)
@@ -329,17 +303,18 @@ class ReusableItem (Item):
                 
         self.inuse = False
 
-    def isInUse (self):
-        
+
+    def isInUse (self):        
         """ returns boolean, if item is in use"""
-        
         return self.inuse
+    
     
     def supportsUseAlias (self,regex):
         """ Define here, if item supports regex as an usage
         alias. Returns False as default 
         @rtype: bool"""
         return False
+    
     
     def supportsUnuseAlias (self,regex):
         """ Define here, if item supports regex as an unuse
