@@ -387,15 +387,15 @@ class Persistent (object):
         
         oldbase  = []
         for t in cbtuples:
-            colname = str([t[1]])
+            colname = str(t[1])
             oldbase.append(colname)
 
-        newbase = set(cls.__attributes__.keys())
+        newbase = cls.__attributes__.keys() + ["id","_class"]
         mixed   = list(set(newbase + oldbase))
+        
         for attr in mixed:
             
             if attr in oldbase and attr not in newbase:
-                
                        
                 tlist = ["id","_class"]
                 
@@ -407,10 +407,13 @@ class Persistent (object):
                 s.cursor.execute("create temporary table " + 
                                  cls.__class_table__ + "_backup " + 
                                  tstr + ";")
-            
+                
+                clist = cls.__attributes__.keys() + ["id","_class"] 
+                
+                                 
                 s.cursor.execute("insert into " +
                                  cls.__class_table__ + "_backup " +
-                                 "select " + ",".join(tlist) + 
+                                 "select " + ",".join(clist) + " " +
                                  "from " + cls.__class_table__ + ";")
                 
                 s.cursor.execute("drop table " + cls.__class_table__ + ";")
@@ -420,8 +423,8 @@ class Persistent (object):
                                  tstr + ";")
                 
                 s.cursor.execute("insert into " +
-                                 cls.__class_table__ +
-                                 "select " + ",".join(tlist) + 
+                                 cls.__class_table__ + " "
+                                 "select " + ",".join(clist) + " " + " "
                                  "from " + cls.__class_table__ + "_backup;")
 
                 s.cursor.execute("drop table " + cls.__class_table__ + "_backup;")
