@@ -76,6 +76,18 @@ class Room (Perceivable,
         CharacterCollection.__init__(self)
         ItemCollection.__init__(self)
     
+    
+    def getAll (self):
+        all = self.allitems
+        all += self.details
+        all += self.characters
+        for c in self.characters:
+            all += c.inventory.allitems
+        return all
+    
+    all = property(fget = getAll,
+                   doc  = "Everything in this room")
+    
     # overwriting methods for causal enviroment integration
         
     def addCharacter(self, c):

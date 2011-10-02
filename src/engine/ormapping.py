@@ -369,12 +369,69 @@ class Persistent (object):
     __metaclass__ = PersistentMeta
 
     __class_table__ = "Persistent"
+    
+    patchid = Integer()
 
     def __init__ (self):
         if not "_instore" in dir(self):
             self._instore = True
             self.store = Store()
             self.store.add(self)
+    
+    @classmethod
+    def __rebase__ (cls):
+        if cls.__name__ != cls.__class_table__:
+            return
+        s = Store()
+        cbtuples = s.cursor.execute("PRAGMA table_info(" +  cls.__class_table__ + ");").fetchall()
+        
+        oldbase  = []
+        for t in cbtuples:
+            colname = str([t[1]])
+            oldbase.append(colname)
+
+        newbase = set(cls.__attributes__.keys())
+        mixed   = list(set(newbase + oldbase))
+        for attr in mixed:
+            
+            if attr in oldbase and attr not in newbase:
+                
+                       
+                tlist = ["id","_class"]
+                
+                for rowname, rowtype in cls.__attributes__.items():
+                    tlist.append(rowname + " " + rowtype)
+                    
+                tstr = "(" + ",".join(tlist) + ")"
+                s = Store()
+                s.cursor.execute("create temporary table " + 
+                                 cls.__class_table__ + "_backup " + 
+                                 tstr + ";")
+            
+                s.cursor.execute("insert into " +
+                                 cls.__class_table__ + "_backup " +
+                                 "select " + ",".join(tlist) + 
+                                 "from " + cls.__class_table__ + ";")
+                
+                s.cursor.execute("drop table " + cls.__class_table__ + ";")
+                
+                s.cursor.execute("create table " + 
+                                 cls.__class_table__ + 
+                                 tstr + ";")
+                
+                s.cursor.execute("insert into " +
+                                 cls.__class_table__ +
+                                 "select " + ",".join(tlist) + 
+                                 "from " + cls.__class_table__ + "_backup;")
+
+                s.cursor.execute("drop table " + cls.__class_table__ + "_backup;")
+              
+            if attr in newbase and attr not in oldbase:
+                s.cursor.execute("alter table " + cls.__class_table__ + 
+                                 " add column " + attr + " " +
+                                 cls.__attributes__[attr])
+                
+            
     
     @classmethod
     def createTable (cls):
