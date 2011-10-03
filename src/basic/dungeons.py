@@ -116,19 +116,23 @@ class QuestCompletionListener (SignalListener):
     for this. 
     """    
     
-    dungeon = Reference()
-    tasks   = BackRef(QuestTask,"completionlistener")
+    dungeon  = Reference()
+    tasks    = BackRef(QuestTask,"completionlistener")
+    complete = Boolean()
     
     def __init__ (self,dungeon):
         SignalListener.__init__(self)
         self.dungeon = dungeon
+        self.complete = False
     
     
     def addTask (self, name):
         t = QuestTask(self,name)
     
         
-    def signalReceived (self, signal):
+    def signalReceived (self, signal):     
+        if self.complete:
+            return
         if not isinstance(signal,TaskCompletionSignal):
             return
         name = signal.taskname
@@ -143,6 +147,7 @@ class QuestCompletionListener (SignalListener):
             if not t.complete:
                 return
                 break
+        self.complete = True
         self.dungeon.questComplete()
             
 
