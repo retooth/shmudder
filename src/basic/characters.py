@@ -24,7 +24,7 @@
     (like an inventory or the ability to inflict damage)
  """
 
-from engine.ormapping import Reference, BackRef, Boolean, Integer
+from engine.ormapping import Reference, BackRef, Boolean, Integer, OneToOne
 from abstract.perception import Addressable, Perceivable, AddressableCollection
 from abstract.evolvement import GradualImprovable, Improvable
 from basic.details import DetailCollection
@@ -368,10 +368,18 @@ class Inventory (ItemCollection):
     A very simple player inventory
     """
 
+    character = OneToOne(Character,"inventory")
+
     def showItems (self,actor):
         actor.receiveMessage("-"*20)
         ItemCollection.showItems(self, actor)
         actor.receiveMessage("-"*20)
+        
+    
+    def getLocation (self):
+        return self.character.location
+    
+    location = property(getLocation)
 
 
 class Player (GameHandler,

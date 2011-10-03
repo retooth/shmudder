@@ -39,6 +39,11 @@ class Detail (Perceivable):
         """ Set this to True, if you want your Detail
         explicitely listed in room descriptions.
         (Don't forget to implement showShort)"""
+        
+    def getLocation (self):
+        return self.collection.location
+    
+    location = property(getLocation)
 
 
 class DetailCollection (AddressableCollection):

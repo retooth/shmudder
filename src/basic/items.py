@@ -45,6 +45,12 @@ class Item (DetailCollection,
         Perceivable.__init__(self)
         self.collection = None
 
+
+    def getLocation (self):
+        return self.collection.location
+    
+    location = property(getLocation)
+    
     
     def use (self):
         raise UnusableItem("")
@@ -213,7 +219,7 @@ class ItemCollection (AddressableCollection):
             
             amount = count[itemtype]
             itemtype.showGroup(actor,amount)
-
+            
 
 class ChooseyItemCollection (ItemCollection):
     

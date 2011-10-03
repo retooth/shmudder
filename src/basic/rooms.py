@@ -88,6 +88,11 @@ class Room (Perceivable,
     all = property(fget = getAll,
                    doc  = "Everything in this room")
     
+    def getLocation (self):
+        return self
+    
+    location = property(getLocation)
+    
     # overwriting methods for causal enviroment integration
         
     def addCharacter(self, c):

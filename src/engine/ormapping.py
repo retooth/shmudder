@@ -336,6 +336,22 @@ class BackRef (object):
     def __set__(self, instance, value):
         raise StandardError ("Read-Only")
 
+class OneToOne (object):
+    
+    def __init__ (self,itemclass,ref):
+        self.store = Store()
+        self.itemclass = itemclass
+        self.ref = "_"+ref
+
+    def __get__(self, instance, owner):
+        table = self.itemclass.__class_table__
+        item = self.store.cursor.execute("select id from " + table + " where " + self.ref + "=" + str(instance.id) + ";").fetchone()
+        return self.store.objects[item[0]]
+
+    def __set__(self, instance, value):
+        raise StandardError ("Read-Only")
+
+
 
 class PersistentMeta (type):
 
