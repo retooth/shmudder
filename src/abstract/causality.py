@@ -174,6 +174,9 @@ class SignalEmitter (Persistent):
             for l in e.listeners:
                 l.signalReceived(signal)
         
+        if 'location' in dir(self):
+            for l in self.location.listeners:
+                l.signalReceived(signal)
         
 class SignalListener (Persistent):
      

@@ -41,6 +41,8 @@ class Detail (Perceivable):
         (Don't forget to implement showShort)"""
         
     def getLocation (self):
+        if not self.collection:
+            return
         return self.collection.location
     
     location = property(getLocation)

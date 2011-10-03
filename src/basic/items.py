@@ -47,6 +47,8 @@ class Item (DetailCollection,
 
 
     def getLocation (self):
+        if not self.collection:
+            return
         return self.collection.location
     
     location = property(getLocation)

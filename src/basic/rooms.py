@@ -103,17 +103,9 @@ class Room (Perceivable,
         
         CharacterCollection.addCharacter(self, c)
         
-        if "emit" in dir(c):
-            self.removeEmitter(c)
-        if "signalReceived" in dir(c):
-            self.removeListener(c)
-        
         for item in c.inventory.items:
             if "emit" in dir(item):
-                self.addEmitter(item)
                 item.emitEntrySignal()
-            if "signalReceived" in dir(item):
-                self.addListener(item)
         
         c.location = self
 
@@ -121,18 +113,10 @@ class Room (Perceivable,
     def removeCharacter(self, c):        
         """ Removes character c from the room """
         CharacterCollection.removeCharacter(self, c)
-        
-        if "emit" in dir(c):
-            self.removeEmitter(c)
-        if "signalReceived" in dir(c):
-            self.removeListener(c)
       
         for item in c.inventory.items:
             if "emit" in dir(item):
                 item.emitExitSignal()
-                self.removeEmitter(item)
-            if "signalReceived" in dir(item):
-                self.removeListener(item)
     
 ####################       
       
