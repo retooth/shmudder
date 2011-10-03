@@ -26,8 +26,8 @@ def createBaseTables ():
 
     Persistent.createTable()
 
-    M2M_EnviromentEmitter.createTable()
-    M2M_EnviromentListener.createTable()
+    M2M_RoomEmitter.createTable()
+    M2M_RoomListener.createTable()
     
     Addressable.createTable()
     Perceivable.createTable()

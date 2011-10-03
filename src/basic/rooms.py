@@ -18,7 +18,7 @@
 
 from engine.ormapping import Reference, BackRef, Boolean
 from abstract.perception import Addressable, Perceivable
-from abstract.causality import CausalEnviroment
+from abstract.causality import *
 from basic.details import DetailCollection
 from basic.characters import CharacterCollection
 from basic.items import ItemCollection
@@ -53,8 +53,7 @@ class Exit (Addressable):
 class Room (Perceivable,
             DetailCollection,
             CharacterCollection,
-            ItemCollection,
-            CausalEnviroment):
+            ItemCollection):
     
     
     """ 
@@ -69,10 +68,13 @@ class Room (Perceivable,
     exits = BackRef(Exit,"anchor")
     dungeon = Reference()
     
+    emitterlinks  = BackRef (M2M_RoomEmitter, "enviroment")
+    listenerlinks = BackRef (M2M_RoomListener, "enviroment")
+    
+
     def __init__(self):
         Perceivable.__init__(self)
         DetailCollection.__init__(self)
-        CausalEnviroment.__init__(self)
         CharacterCollection.__init__(self)
         ItemCollection.__init__(self)
     
@@ -92,8 +94,48 @@ class Room (Perceivable,
         return self
     
     location = property(getLocation)
+
+
+    def addEmitter (self, e):
+        """ Adds a static (!) SignalEmitter e to enviroment """
+        link = M2M_RoomEmitter(self, e)
     
-    # overwriting methods for causal enviroment integration
+    
+    def removeEmitter (self, e):
+        """ Removes static (!) SignalEmitter e from enviroment """
+        links = self.emitterlinks
+        for l in links:
+            if l.emitter == e:
+                l.__delete__()
+    
+    
+    def getEmitters (self):
+        return map(lambda x : x.emitter, self.emitterlinks)
+
+    emitters = property(fget = getEmitters,\
+                        doc  = "SignalEmitters placed in this enviroment")
+
+
+    def addListener (self, l):
+        """ Adds static(!) SignalListener l to enviroment """
+        link = M2M_RoomListener(self,l)
+  
+    
+    def removeListener (self, l):      
+        """ Removes (static) SignalListener l from enviroment """
+        links = self.listenerlinks
+        for l in links:
+            if l.emitter == l:
+                l.__delete__()
+    
+    
+    def getListeners (self):
+        return map(lambda x : x.listener, self.listenerlinks)
+
+    listeners = property(fget = getListeners,\
+                         doc  = "SignalListeners placed in this enviroment")
+
+
         
     def addCharacter(self, c):
         

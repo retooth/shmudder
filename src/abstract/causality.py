@@ -33,7 +33,7 @@ class Signal (object):
     pass
 
 
-class M2M_EnviromentEmitter (Persistent):
+class M2M_RoomEmitter (Persistent):
 
     """
     @author: Fabian Vallon 
@@ -53,7 +53,7 @@ class M2M_EnviromentEmitter (Persistent):
         self.emitter = emitter
 
 
-class M2M_EnviromentListener (Persistent):
+class M2M_RoomListener (Persistent):
  
     """
     @author: Fabian Vallon 
@@ -73,65 +73,6 @@ class M2M_EnviromentListener (Persistent):
         self.listener = listener
 
 
-class CausalEnviroment (Persistent):
-    
-    """
-    @author: Fabian Vallon 
-    @license: U{GPL v3<http://www.gnu.org/licenses/>}
-    @version: 0.1
-    @since: 0.1
-    
-    A Collection to connect SignalEmitters and SignalListeners.
-    Should only be needed by the Room class
-    """
-    
-    emitterlinks  = BackRef (M2M_EnviromentEmitter, "enviroment")
-    listenerlinks = BackRef (M2M_EnviromentListener, "enviroment")
-    
-    def __init__ (self):
-        Persistent.__init__(self)
-    
-        
-    def addEmitter (self, e):
-        """ Adds SignalEmitter e to enviroment """
-        link = M2M_EnviromentEmitter(self, e)
-    
-    
-    def removeEmitter (self, e):
-        """ Removes SignalEmitter e from enviroment """
-        links = self.emitterlinks
-        for l in links:
-            if l.emitter == e:
-                l.__delete__()
-    
-    
-    def getEmitters (self):
-        return map(lambda x : x.emitter, self.emitterlinks)
-
-    emitters = property(fget = getEmitters,\
-                        doc  = "SignalEmitters placed in this enviroment")
-
-
-    def addListener (self, l):
-        """ Adds SignalListener l to enviroment """
-        link = M2M_EnviromentListener(self,l)
-  
-    
-    def removeListener (self, l):      
-        """ Removes SignalListener l from enviroment """
-        links = self.listenerlinks
-        for l in links:
-            if l.emitter == l:
-                l.__delete__()
-    
-    
-    def getListeners (self):
-        return map(lambda x : x.listener, self.listenerlinks)
-
-    listeners = property(fget = getListeners,\
-                         doc  = "SignalListeners placed in this enviroment")
-
-
 class SignalEmitter (Persistent):
 
     """
@@ -143,7 +84,7 @@ class SignalEmitter (Persistent):
     Emits Signals
     """
 
-    enviromentlinks = BackRef(M2M_EnviromentEmitter, "emitter")
+    enviromentlinks = BackRef(M2M_RoomEmitter, "emitter")
      
     def __init__ (self):
         Persistent.__init__(self)
