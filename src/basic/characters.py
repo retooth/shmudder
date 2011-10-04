@@ -302,6 +302,13 @@ class Character (Perceivable,
          
         pass    
         
+    
+    def locationChanged (self,old,new):
+        """ [event method] gets invoked if characters
+        leaves room """
+        pass
+    
+    
         
 class CharacterCollection (AddressableCollection):
 

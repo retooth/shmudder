@@ -68,8 +68,8 @@ class Room (Perceivable,
     exits = BackRef(Exit,"anchor")
     dungeon = Reference()
     
-    emitterlinks  = BackRef (M2M_RoomEmitter, "enviroment")
-    listenerlinks = BackRef (M2M_RoomListener, "enviroment")
+    emitterlinks  = BackRef (M2M_RoomEmitter, "room")
+    listenerlinks = BackRef (M2M_RoomListener, "room")
     
 
     def __init__(self):
@@ -97,12 +97,12 @@ class Room (Perceivable,
 
 
     def addEmitter (self, e):
-        """ Adds a static (!) SignalEmitter e to enviroment """
+        """ Adds a static (!) SignalEmitter e to this room """
         link = M2M_RoomEmitter(self, e)
     
     
     def removeEmitter (self, e):
-        """ Removes static (!) SignalEmitter e from enviroment """
+        """ Removes static (!) SignalEmitter e from this room """
         links = self.emitterlinks
         for l in links:
             if l.emitter == e:
@@ -110,19 +110,25 @@ class Room (Perceivable,
     
     
     def getEmitters (self):
-        return map(lambda x : x.emitter, self.emitterlinks)
+        emitters = []
+        for l in self.emitterlinks:
+            emitters.append(l.emitter)
+        for a in self.all:
+            if isinstance(a,SignalEmitter):
+                emitters.append(a)
+        return emitters
 
     emitters = property(fget = getEmitters,\
-                        doc  = "SignalEmitters placed in this enviroment")
+                        doc  = "SignalEmitters linked to this room")
 
 
     def addListener (self, l):
-        """ Adds static(!) SignalListener l to enviroment """
+        """ Adds static(!) SignalListener l to this room """
         link = M2M_RoomListener(self,l)
   
     
     def removeListener (self, l):      
-        """ Removes (static) SignalListener l from enviroment """
+        """ Removes (static) SignalListener l from this room """
         links = self.listenerlinks
         for l in links:
             if l.emitter == l:
@@ -130,10 +136,16 @@ class Room (Perceivable,
     
     
     def getListeners (self):
-        return map(lambda x : x.listener, self.listenerlinks)
+        listeners = []
+        for l in self.listenerlinks:
+            listeners.append(l.listener)
+        for a in self.all:
+            if isinstance(a,SignalListener):
+                listeners.append(a)
+        return listeners
 
     listeners = property(fget = getListeners,\
-                         doc  = "SignalListeners placed in this enviroment")
+                         doc  = "SignalListeners linked to this room")
 
 
         
@@ -144,21 +156,12 @@ class Room (Perceivable,
         """
         
         CharacterCollection.addCharacter(self, c)
-        
-        for item in c.inventory.items:
-            if "emit" in dir(item):
-                item.emitEntrySignal()
-        
         c.location = self
 
 
     def removeCharacter(self, c):        
         """ Removes character c from the room """
         CharacterCollection.removeCharacter(self, c)
-      
-        for item in c.inventory.items:
-            if "emit" in dir(item):
-                item.emitExitSignal()
     
 ####################       
       
@@ -237,6 +240,12 @@ class Room (Perceivable,
             
         self.removeCharacter(actor)
         newplace.addCharacter(actor)
+        
+        actor.locationChanged(self,newplace)
+        
+        for item in actor.inventory.items:
+            item.locationChanged(self,newplace)
+        
 
     
     def leavePanically (self, actor):

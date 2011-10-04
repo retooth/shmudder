@@ -41,15 +41,15 @@ class M2M_RoomEmitter (Persistent):
     @version: 0.1
     @since: 0.1
     
-    [internal] Many-to-Many mapping of CausalEnviroments and SignalEmitters.
+    [internal] Many-to-Many mapping of Rooms and SignalEmitters.
     """
     
-    enviroment = Reference()    
+    room    = Reference()    
     emitter = Reference()
 
-    def __init__ (self, enviroment, emitter):
+    def __init__ (self, room, emitter):
         Persistent.__init__ (self)
-        self.enviroment = enviroment
+        self.room = room
         self.emitter = emitter
 
 
@@ -61,15 +61,15 @@ class M2M_RoomListener (Persistent):
     @version: 0.1
     @since: 0.1
     
-    [internal] Many-to-Many mapping of CausalEnviroments and SignalListeners.
+    [internal] Many-to-Many mapping of Rooms and SignalListeners.
     """
     
-    enviroment = Reference()    
+    room = Reference()    
     listener = Reference()
 
-    def __init__ (self, enviroment, listener):
+    def __init__ (self, room, listener):
         Persistent.__init__ (self)
-        self.enviroment = enviroment
+        self.room = room
         self.listener = listener
 
 
@@ -84,40 +84,35 @@ class SignalEmitter (Persistent):
     Emits Signals
     """
 
-    enviromentlinks = BackRef(M2M_RoomEmitter, "emitter")
+    roomlinks = BackRef(M2M_RoomEmitter, "emitter")
      
     def __init__ (self):
         Persistent.__init__(self)
 
 
-    def emitExitSignal (self):
-        """ [event method] Gets invoked, before player leaves
-        room, if he/she has the emitter with him/her """
-        pass
- 
-    
-    def emitEntrySignal (self):
-        """ [event method] Gets invoked, after player left
-        room, if he/she has this emitter with him/her """
-        pass
+    def getTransmissionArea (self):
+        area = []
+        for r in self.roomlinks:
+            area.append(r.room)
+        if 'location' in dir(self):
+            area.append(self.location)
+        return area
 
-
-    def getEnviroments (self):
-        return map(lambda x : x.enviroment, self.enviromentlinks)
-
-    enviroments = property(fget = getEnviroments,
-                           doc  = "Enviroments to which this emitter is linked")
+    transmissionarea = property(fget = getTransmissionArea,
+                                doc  = "Rooms to which this emitter is linked")
 
 
     def emit (self,signal):
-        """ Emits signal to all listeners in all linked enviroments"""
-        for e in self.enviroments :
-            for l in e.listeners:
+        """ Emits signal to all listeners in all linked rooms"""
+        for r in self.transmissionarea :
+            for l in r.listeners:
                 l.signalReceived(signal)
         
-        if 'location' in dir(self):
-            for l in self.location.listeners:
-                l.signalReceived(signal)
+    
+    def emitInRoom (self, signal, room):
+        """ Emits signal to all listeners in room"""
+        for l in self.room.listeners:
+            l.signalReceived(signal)
         
 class SignalListener (Persistent):
      
@@ -136,7 +131,7 @@ class SignalListener (Persistent):
 
     def signalReceived (self,signal): 
         """ 
-        Will be called, when a emitter in a linked enviroment
+        Will be called, when a emitter in a linked room
         shares a signal.
         
         @Warning: You have to do a type/attribute check of the

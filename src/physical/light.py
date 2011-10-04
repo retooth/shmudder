@@ -45,18 +45,13 @@ class LightSource (ReusableItem, SignalEmitter):
         self.emit(light)
     
     
-    def emitEntrySignal (self):
-        if self.isInUse():
-            light = LightIntensityChange()
-            light.intensity = self.lightintensity
-            self.emit(light)
-    
-            
-    def emitExitSignal(self):
+    def locationChanged (self, old, new):
         if self.isInUse():
             light = LightIntensityChange()
             light.intensity = - self.lightintensity
-            self.emit(light)
+            self.emitInRoom(light,old)
+            light.intensity = self.lightintensity
+            self.emitInRoom(light,new)        
     
         
     def unuse (self, actor):

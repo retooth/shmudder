@@ -54,6 +54,12 @@ class Item (DetailCollection,
     location = property(getLocation)
     
     
+    def locationChanged (self,old,new):
+        """ [event method] gets invoked if item is carried
+        from one room to another """
+        pass
+    
+    
     def use (self):
         raise UnusableItem("")
 
