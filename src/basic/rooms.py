@@ -241,10 +241,10 @@ class Room (Perceivable,
         self.removeCharacter(actor)
         newplace.addCharacter(actor)
         
-        actor.locationChanged(self,newplace)
+        actor.locationChanged(self,newplace,keyword)
         
         for item in actor.inventory.items:
-            item.locationChanged(self,newplace)
+            item.locationChanged(self,newplace,keyword)
         
 
     

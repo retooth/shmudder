@@ -111,7 +111,7 @@ class SignalEmitter (Persistent):
     
     def emitInRoom (self, signal, room):
         """ Emits signal to all listeners in room"""
-        for l in self.room.listeners:
+        for l in room.listeners:
             l.signalReceived(signal)
         
 class SignalListener (Persistent):

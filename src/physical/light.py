@@ -45,7 +45,7 @@ class LightSource (ReusableItem, SignalEmitter):
         self.emit(light)
     
     
-    def locationChanged (self, old, new):
+    def locationChanged (self, old, new, keyword):
         if self.isInUse():
             light = LightIntensityChange()
             light.intensity = - self.lightintensity

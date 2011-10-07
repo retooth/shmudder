@@ -222,7 +222,9 @@ class Store (object):
     def update (self, table, id, var, value):
         t = (value,id)
         self.cursor.execute("update " + table + " set " + var + "= ? where id = ?;",t)
-            
+    
+    def commit (self):
+        self.connection.commit()
             
             
                       
@@ -244,6 +246,8 @@ class Reference (object):
         if not value :
             instance.__dict__[self.real] = 0
         else :
+            if not "id" in dir(value):
+                raise RuntimeError("Assigned object is not persistent")
             instance.__dict__[self.real] = value.id
         instance.__update__(self.real)
 
@@ -352,7 +356,6 @@ class OneToOne (object):
         raise StandardError ("Read-Only")
 
 
-
 class PersistentMeta (type):
 
     # credit goes to azaq23 from #python.de
@@ -449,8 +452,7 @@ class Persistent (object):
                 s.cursor.execute("alter table " + cls.__class_table__ + 
                                  " add column " + attr + " " +
                                  cls.__attributes__[attr])
-                
-            
+
     
     @classmethod
     def createTable (cls):
@@ -577,3 +579,13 @@ class Persistent (object):
                 
                 self.store.update(table,id,attrname,value)
                 break
+            
+class PatchRegister (Persistent):
+    
+    clsname = String() 
+    patchid = Integer()
+    
+    def __init__ (self, clsname):
+        Persistent.__init__(self)
+        self.clsname = clsname
+        self.patchid = 0

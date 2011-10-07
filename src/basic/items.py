@@ -54,7 +54,7 @@ class Item (DetailCollection,
     location = property(getLocation)
     
     
-    def locationChanged (self,old,new):
+    def locationChanged (self, old, new, keyword):
         """ [event method] gets invoked if item is carried
         from one room to another """
         pass
