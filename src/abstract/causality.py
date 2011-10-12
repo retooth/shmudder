@@ -92,8 +92,8 @@ class SignalEmitter (Persistent):
 
     def getTransmissionArea (self):
         area = []
-        for r in self.roomlinks:
-            area.append(r.room)
+        for link in self.roomlinks:
+            area.append(link.room)
         if 'location' in dir(self):
             area.append(self.location)
         return area
@@ -102,17 +102,17 @@ class SignalEmitter (Persistent):
                                 doc  = "Rooms to which this emitter is linked")
 
 
-    def emit (self,signal):
+    def emit (self, signal):
         """ Emits signal to all listeners in all linked rooms"""
-        for r in self.transmissionarea :
-            for l in r.listeners:
-                l.signalReceived(signal)
+        for room in self.transmissionarea :
+            for listener in room.listeners:
+                listener.signalReceived(signal)
         
     
     def emitInRoom (self, signal, room):
         """ Emits signal to all listeners in room"""
-        for l in room.listeners:
-            l.signalReceived(signal)
+        for listener in room.listeners:
+            listener.signalReceived(signal)
         
 class SignalListener (Persistent):
      
@@ -129,7 +129,7 @@ class SignalListener (Persistent):
         Persistent.__init__(self)
 
 
-    def signalReceived (self,signal): 
+    def signalReceived (self, signal): 
         """ 
         Will be called, when a emitter in a linked room
         shares a signal.

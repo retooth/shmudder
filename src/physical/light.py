@@ -49,9 +49,9 @@ class LightSource (ReusableItem, SignalEmitter):
         if self.isInUse():
             light = LightIntensityChange()
             light.intensity = - self.lightintensity
-            self.emitInRoom(light,old)
+            self.emitInRoom(light, old)
             light.intensity = self.lightintensity
-            self.emitInRoom(light,new)        
+            self.emitInRoom(light, new)        
     
         
     def unuse (self, actor):
@@ -80,8 +80,8 @@ class LightIntensityListener (SignalListener):
         self.intensity = 0
     
         
-    def signalReceived (self,signal):
-        if isinstance(signal,LightIntensityChange):
+    def signalReceived (self, signal):
+        if isinstance(signal, LightIntensityChange):
             self.intensity += signal.intensity
     
         
@@ -110,7 +110,7 @@ class IlluminatedRoom (Room):
         return self.lil.intensity
     
     
-    def setLightIntensity(self,li):
+    def setLightIntensity(self, li):
         self.lil.intensity = li
     
     lightintensity = property(fget=getLightIntensity,

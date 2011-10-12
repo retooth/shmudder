@@ -13,8 +13,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from engine.ormapping import Persistent, PickleType, String
+from engine.ormapping import Persistent, PickleType, String, BackRef
+from basic.details import Detail
 from abstract.exceptions import *
+
 
 class Addressable (Persistent):
     
@@ -38,17 +40,17 @@ class Addressable (Persistent):
         self.pkeywords = []
     
         
-    def addSingularKeyword (self,keyword):
+    def addSingularKeyword (self, keyword):
         """ Adds a singular keyword """
         self.skeywords = self.skeywords + [keyword]
 
 
-    def addPluralKeyword (self,keyword):
+    def addPluralKeyword (self, keyword):
         """ Adds a plural keyword """
         self.pkeywords = self.pkeywords + [keyword]
     
     
-    def call (self,keyword):
+    def call (self, keyword):
         """ 
         Responds to singular and plural nouns. 
         - Returns 0, if thing doesn't answer to the name of keyword
@@ -63,48 +65,35 @@ class Addressable (Persistent):
         return 0
 
 
-class AddressableCollection (Persistent):
-    
+def callAdressables (keyword, collection):
     """ 
-    @author: Fabian Vallon 
-    @license: U{GPL v3<http://www.gnu.org/licenses/>}
-    @version: 0.1
-    @since: 0.1
-    
-    Template for Collections, that include Addressable objects
-    """
-    
-    def callCollectionItems (self, keyword, collection):
-        """ 
-        Gets all items in collection, that respond to keyword. Returns
-        only a one-item list, if keyword was singular
+    Gets all items in collection, that respond to keyword. Returns
+    only a one-item list, if keyword was singular
         
-        @param collection: list of addressable things
-         
-        @rtype: list<Addressable>
-        """
-        found = []
-        for thing in collection:
+    @param collection: list of addressable things
+    @rtype: list<Addressable>
+    """
+    found = []
+    for thing in collection:        
+        # forward call
+        response = thing.call(keyword)
             
-            # forward call
-            response = thing.call(keyword)
+        # handle response as specified in Addressable.call(key)
+        # 1 means: thing found and it was a singular noun
             
-            # handle response as specified in Addressable.call(key)
-            # 1 means: thing found and it was a singular noun
+        if response == 1:
+            found.append(thing)
+            # break - no further stuff was mentioned
+            break
             
-            if response == 1:
-                found.append(thing)
-                # break - no further stuff was mentioned
-                break
-            
-            # 2 means: thing found and it was a plural noun
-            elif response == 2:
+        # 2 means: thing found and it was a plural noun
+        elif response == 2:    
+            found.append(thing)
+            # --- no break here --- just proceed and look 
+            # if anything else responds
                 
-                found.append(thing)
-                # --- no break here --- just proceed and look 
-                # if anything else responds
-                
-        return found
+    return found
+
 
 
 class Perceivable (Addressable):
@@ -125,6 +114,8 @@ class Perceivable (Addressable):
     feeling          = String()
     sound            = String()
     
+    details = BackRef(Detail,"collection")
+    
     def __init__ (self):
         Addressable.__init__(self)
         self.shortdescription = ''
@@ -135,6 +126,10 @@ class Perceivable (Addressable):
     
         
     def showShort (self, actor):
+        """ 
+        [player action] Sends shortdescription to the player or 
+        raises Invisible exception
+        """
         if self.shortdescription:
             actor.receiveMessage(self.shortdescription)
             return
@@ -142,6 +137,10 @@ class Perceivable (Addressable):
 
 
     def showLong (self, actor):
+        """ 
+        [player action] Sends longdescription to the player or 
+        raises Invisible exception
+        """
         if self.longdescription:
             actor.receiveMessage(self.longdescription)
             return
@@ -149,6 +148,10 @@ class Perceivable (Addressable):
 
 
     def smell (self, actor):
+        """ 
+        [player action] Sends odor to the player or 
+        raises NoOdor exception
+        """
         if self.odor:
             actor.receiveMessage(self.odor)
             return
@@ -156,6 +159,10 @@ class Perceivable (Addressable):
 
         
     def touch (self, actor):
+        """ 
+        [player action] Sends feeling to the player or 
+        raises NoFeeling exception
+        """
         if self.feeling:
             actor.receiveMessage(self.feeling)
             return
@@ -163,9 +170,38 @@ class Perceivable (Addressable):
 
             
     def listen (self, actor):
+        """ 
+        [player action] Sends sound to the player or 
+        raises NoSound exception
+        """
         if self.sound:
             actor.receiveMessage(self.sound)
             return
         raise NoSound("")
-            
+    
+    def addDetail (self, detail):
 
+        """ Adds a detail to the collection """
+        detail.collection = self
+
+        
+    def removeDetail (self, detail):
+
+        """Removes a detail from the collection"""
+        detail.collection = None
+
+        
+    def callDetails (self, keyword):
+        """ 
+        calls every detail in collection by keyword and
+        returns responding details
+        @rtype: list<Detail>
+        """
+        details = callAdressables(keyword, self.details)
+        return details
+
+    
+    def showDetails (self, actor):
+        """ [player action] shows every detail in collection """
+        for detail in self.details :
+            detail.showShort(actor)

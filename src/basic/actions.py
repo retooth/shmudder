@@ -20,16 +20,17 @@
 #################################################
 
 from engine.ormapping import Store
-from basic.exceptions import UnknownPlayer, BadPassword, UnknownPlayerType, PlayerExists
+from basic.exceptions import UnknownPlayer, BadPassword
+from basic.exceptions import UnknownPlayerType, PlayerExists
 from hashlib import sha512
 
  
 def login (handler, regex, arguments):
-    
+    """ gets invoked after player typed login name """
     s = Store()    
     loginstr = arguments[0]
-    playeridtuple = s.cursor.execute("select id from user where _login = ?",\
-                                     (loginstr,)).fetchone()
+    playeridtuple = s.cursor.execute("select id from user where _login = ?", \
+                                     (loginstr, )).fetchone()
         
     if not playeridtuple :
         raise UnknownPlayer("")
@@ -42,7 +43,7 @@ def login (handler, regex, arguments):
 
 
 def password (handler, regex, arguments):
-         
+    """ gets invoked after player typed password """
     password = arguments[0]
     
     # compare hashes
@@ -55,16 +56,18 @@ def password (handler, regex, arguments):
     handler.wannabe.wakeup(handler)
         
         
-def logout (player,regex,arguments):
+def logout (player, regex, arguments):
+    """ logs player out """
     player.logout()
 
 
-def register (handler,regex,arguments):
+def register (handler, regex, arguments):
+    """ starts register process """
     handler.switchToRegisterHandler()
 
 
 def chooseCharacter (handler, regex, arguments):
-
+    """ chooses character type in register process """
     keyword = arguments[0]
     playert = handler.callPlayerType(keyword)
         
@@ -76,7 +79,10 @@ def chooseCharacter (handler, regex, arguments):
         
 
 def showCharacterChoiceInfo (handler, regex, arguments):
-
+    """ 
+    shows an info screen about a character type 
+    in register process 
+    """
     keyword = arguments[0]
     playert = handler.callPlayerType(keyword)
     
@@ -87,12 +93,12 @@ def showCharacterChoiceInfo (handler, regex, arguments):
 
 
 def chooseName (handler, regex, arguments):
-  
+    """ determines the player's name in register process """
     name = arguments[0]
     
     s = Store()
-    playeridtuple = s.cursor.execute("select id from user where _login = ?",\
-                                     (name,)).fetchone()
+    playeridtuple = s.cursor.execute("select id from user where _login = ?", \
+                                     (name, )).fetchone()
                                          
     if playeridtuple :
         raise PlayerExists("")
@@ -103,7 +109,7 @@ def chooseName (handler, regex, arguments):
 
 
 def choosePassword (handler, regex, arguments):        
-    
+    """ chooses player's password in register process """
     password = arguments[0]
     handler.wannabe.password = password
     handler.wannabe.choose(handler)
@@ -112,11 +118,13 @@ def choosePassword (handler, regex, arguments):
 # player properties
 #################################################
 
-def showInfo (player,regex,arguments):
+def showInfo (player, regex, arguments):
+    """ forwarder to player's showInfoScreen method """
     player.showInfoScreen()
 
 
-def showInventory (player, regex, arguments):   
+def showInventory (player, regex, arguments):
+    """ invokes showItems on player's inventory """   
     inventory = player.inventory
     inventory.showItems(actor=player)
 
@@ -126,7 +134,7 @@ def showInventory (player, regex, arguments):
 from basic.exceptions import DetailNotFound
 
 def examine (player, regex, arguments):        
-        
+    """ examines something in the room or inventory """
     room    = player.location    
     exstr   = arguments[0]
     details = room.callDetails(exstr)
@@ -142,7 +150,7 @@ def examine (player, regex, arguments):
         obj.showLong(player)    
 
 def smell (player, regex, arguments):        
-        
+    """ smells something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
     details = room.callDetails(exstr)
@@ -158,7 +166,7 @@ def smell (player, regex, arguments):
         obj.smell(player)    
 
 def listen (player, regex, arguments):        
-        
+    """ listens to something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
     details = room.callDetails(exstr)
@@ -174,7 +182,7 @@ def listen (player, regex, arguments):
         obj.listen(player)    
 
 def touch (player, regex, arguments):        
-        
+    """ touches something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
     details = room.callDetails(exstr)
@@ -195,13 +203,14 @@ def touch (player, regex, arguments):
 
 
 def walk (player, regex, arguments):
-            
+    """ changes current room """
     room      = player.location
     direction = arguments[0]
     room.leave(player, direction)
 
 
-def showRoom (player, regex, arguments):        
+def showRoom (player, regex, arguments): 
+    """ shows room description """       
     room = player.location
     room.showLong(player)
 
@@ -211,8 +220,8 @@ def showRoom (player, regex, arguments):
 
 from basic.exceptions import CharacterNotFound
 
-def kill (player,regex,arguments):
-
+def kill (player, regex, arguments):
+    """ kills another player """
     # get player's current room
     room = player.location
     
@@ -232,10 +241,11 @@ def kill (player,regex,arguments):
         
 # items
 #################################################
-from basic.exceptions import ItemReceiverNotFound, ItemNotFound, UnsupportedUseAlias, UnsupportedUnuseAlias
+from basic.exceptions import ItemReceiverNotFound, ItemNotFound 
+from basic.exceptions import UnsupportedUseAlias, UnsupportedUnuseAlias
 
 def throwAway (player, regex, arguments):
-        
+    """ throws item away """
     inv     = player.inventory
     itemstr = arguments[0]     
     items   = inv.callItems(itemstr)
@@ -249,7 +259,7 @@ def throwAway (player, regex, arguments):
 
 
 def take (player, regex, arguments):
-    
+    """ takes item """
     room    = player.location
     itemstr = arguments[0]
     items   = room.callItems(itemstr)
@@ -264,7 +274,7 @@ def take (player, regex, arguments):
 
         
 def giveTo (player, regex, arguments):
-        
+    """ gives item to another character """
     itemstr   = arguments[0]
     receivstr = arguments[1]
         
@@ -301,11 +311,11 @@ def giveTo (player, regex, arguments):
             # it to current receiver
             item = items.pop(0)
                 
-            item.giveTo(actor=player,receiver=r)
+            item.giveTo(player, r)
 
      
-def putInto (player,regex,arguments):
-    
+def putInto (player, regex, arguments):
+    """ puts item in another item """
     itemstr = arguments[0]
     binstr  = arguments[1]
         
@@ -330,11 +340,11 @@ def putInto (player,regex,arguments):
                 break
                 
             item = items.pop(0)    
-            item.putInto(player,b)
+            item.putInto(player, b)
 
         
-def takeOut (player,regex,arguments):
-        
+def takeOut (player, regex, arguments):
+    """ takes item out of another item """
     itemstr = arguments[0]
     
     inv  = player.inventory
@@ -352,7 +362,7 @@ def takeOut (player,regex,arguments):
 
 
 def use (player, regex, arguments):
-        
+    """ uses item """
     inv     = player.inventory
     itemstr = arguments[0]     
     items   = inv.callItems(itemstr)
@@ -373,7 +383,7 @@ def use (player, regex, arguments):
                 
 
 def unuse (player, regex, arguments):
-        
+    """ puts item back into inventory """
     inv     = player.inventory
     itemstr = arguments[0]     
     items   = inv.callItems(itemstr)

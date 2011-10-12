@@ -15,15 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Perceivable, AddressableCollection
-from basic.details import DetailCollection
+from abstract.perception import Perceivable, callAdressables
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType, Boolean
 from mixins.misc import Groupable
-from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction, ItemNotInUse, UnusableItem
+from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction 
+from basic.exceptions import ItemNotInUse, UnusableItem
 
-class Item (DetailCollection,
-            Perceivable):
+class Item (Perceivable):
 
     """ 
     @author: Fabian Vallon 
@@ -40,8 +39,7 @@ class Item (DetailCollection,
 
     collection = Reference()
 
-    def __init__(self):
-        DetailCollection.__init__(self)
+    def __init__ (self):
         Perceivable.__init__(self)
         self.collection = None
 
@@ -60,7 +58,7 @@ class Item (DetailCollection,
         pass
     
     
-    def use (self):
+    def use (self, actor):
         raise UnusableItem("")
 
     
@@ -71,7 +69,7 @@ class Item (DetailCollection,
         return False
 
 
-    def take (self,actor):
+    def take (self, actor):
         """ [player action] Moves item from room to inventory """
         room = actor.location
         inv  = actor.inventory
@@ -79,7 +77,7 @@ class Item (DetailCollection,
         inv.addItem(self)
 
 
-    def throwAway (self,actor):
+    def throwAway (self, actor):
         """ [player action] Moves item from inventory to room """
         # if an item is in use, it should be unused first
         if self.isInUse() :
@@ -91,7 +89,7 @@ class Item (DetailCollection,
         room.addItem(self)
         
 
-    def giveTo (self,actor,receiver):
+    def giveTo (self, actor, receiver):
 
         """ [player action] Moves item from inventory to another inventory """
 
@@ -105,9 +103,10 @@ class Item (DetailCollection,
         inv2.addItem(self)
 
         
-    def putInto (self,actor,container):
+    def putInto (self, actor, container):
         """ [player action] Puts item into container """
-        if not isinstance(container,ItemCollection):
+        # TODO: Check, if bag / or dynamic typecheck
+        if not isinstance(container, ItemCollection):
             raise NotABin("")
 
         # if an item is in use, it should be unused first
@@ -118,7 +117,7 @@ class Item (DetailCollection,
         container.addItem(self)
 
         
-    def takeOut (self,actor):
+    def takeOut (self, actor):
         """ [player action] Takes item out of container """
         actor.inventory.addItem(self)
 
@@ -135,7 +134,7 @@ class Item (DetailCollection,
         room.addItem(self)
         
 
-class ItemCollection (AddressableCollection):
+class ItemCollection (object):
 
     """ 
     @author: Fabian Vallon 
@@ -144,13 +143,10 @@ class ItemCollection (AddressableCollection):
     @since: 0.1
 
     A simple collection for items. Supports groupable items
+    Volatile mixin
     """
 
     unsorteditems = BackRef(Item,"collection")
-
-    def __init__(self):
-        AddressableCollection.__init__(self)
-
 
     def addItem (self, i):
         """ adds item to collection """
@@ -165,47 +161,45 @@ class ItemCollection (AddressableCollection):
     def getItems (self):        
         used = []
         unused = []
-        for ui in self.unsorteditems :
-            if ui.isInUse():
-                used.append(ui)
+        for uitem in self.unsorteditems :
+            if uitem.isInUse():
+                used.append(uitem)
             else :
-                unused.append(ui)
+                unused.append(uitem)
                 
         return unused + used
     
-    items = property(fget=getItems,doc="sorted items (unused first)")
+    items = property(fget = getItems, \
+                     doc  = "sorted items (unused first)")
 
 
     def getAllItems (self):
-        
         all = []
-        q   = [self]
-        
-        while q :
-            current = q.pop(0)
-            for i in current.items:
-                all.append(i)
-                if isinstance(i,ItemCollection):
-                    q.append(i)
+        queue   = [self]
+        while queue :
+            current = queue.pop(0)
+            for item in current.items:
+                all.append(item)
+                if isinstance(item, ItemCollection):
+                    queue.append(item)
         
         return all
 
-    allitems = property(fget = getAllItems,\
+    allitems = property(fget = getAllItems, \
                         doc  = "Searchs recursively for items in collection")
 
 
-    def callItems (self,keyword):        
+    def callItems (self, keyword):        
         """ 
         Calls every item in collection by keyword and
         returns responding items
         @rtype: list<Item>
         """
-        items = self.items
-        items = self.callCollectionItems(keyword,items)
+        items = callAdressables(keyword, self.items)
         return items
 
     
-    def showItems (self,actor):
+    def showItems (self, actor):
         """ Shows every item in collection, groups groupable items"""
         # initialize a counting dictionary for
         # groupable items
@@ -216,7 +210,7 @@ class ItemCollection (AddressableCollection):
         for i in items:
             
             # if item is groupable ..
-            if isinstance(i,Groupable) :
+            if isinstance(i, Groupable) :
                 count[type(i)] += 1    
             else :
                 # .. otherwise proceed normally
@@ -226,7 +220,7 @@ class ItemCollection (AddressableCollection):
         for itemtype in count.keys() :
             
             amount = count[itemtype]
-            itemtype.showGroup(actor,amount)
+            itemtype.showGroup(actor, amount)
             
 
 class ChooseyItemCollection (ItemCollection):
@@ -239,9 +233,6 @@ class ChooseyItemCollection (ItemCollection):
 
     Excludes certain items from being added
     """
-    
-    def __init__ (self):
-        ItemCollection.__init__(self)
     
     def permits (self, i):
         """Should return bool, if i is permitted in this collection"""
@@ -273,7 +264,7 @@ class ReusableItem (Item):
         self.inuse = False
     
     
-    def addBodyRequirement (self,keyword):    
+    def addBodyRequirement (self, keyword):    
         """
         adds a body requirement for this item (keyword should
         be str and match a body part)
@@ -286,7 +277,7 @@ class ReusableItem (Item):
         for slot in self.necessaryslots:
         
             slots = actor.callBodyParts(slot)
-            slots = filter(lambda x: x.item != self,slots)
+            slots = filter(lambda x: x.item != self, slots)
             if not slots :
                 self.unuse(actor)
                 raise ImpossibleAction("")
@@ -323,14 +314,14 @@ class ReusableItem (Item):
         return self.inuse
     
     
-    def supportsUseAlias (self,regex):
+    def supportsUseAlias (self, regex):
         """ Define here, if item supports regex as an usage
         alias. Returns False as default 
         @rtype: bool"""
         return False
     
     
-    def supportsUnuseAlias (self,regex):
+    def supportsUnuseAlias (self, regex):
         """ Define here, if item supports regex as an unuse
         alias. Returns False as default 
         @rtype: bool"""

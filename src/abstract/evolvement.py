@@ -45,26 +45,25 @@ class Improvable (Persistent):
 
 
     def getPercentage (self):    
-        q = float(self.quality)
-        m = float(self.maxquality)
-        if not m :
+        qfloat = float(self.quality)
+        if not self.maxquality :
             return
-        return (q/m)*100
+        mfloat = float(self.maxquality)
+        return (qfloat/mfloat)*100
 
-    percentage = property(fget = getPercentage,\
+    percentage = property(fget = getPercentage, \
                           doc  = "Quality in percent" )
 
 
     def isPerfect (self):
-        max = self.maxquality
-        q   = self.quality
         # shouldn't need the >, but maybe there is
         # some strange behavior
-        if max and max >= q:
+        if (self.maxquality and
+        self.quality >= self.maxquality):
             return True
         return False
     
-    isperfect = property(fget = isPerfect,\
+    isperfect = property(fget = isPerfect, \
                          doc  = "True if quality is perfect")
 
 
@@ -73,7 +72,7 @@ class Improvable (Persistent):
             return False
         return True
 
-    isbroken = property(fget = isBroken,\
+    isbroken = property(fget = isBroken, \
                         doc  = "True if quality is 0")
 
 
@@ -84,15 +83,15 @@ class Improvable (Persistent):
         and calls qualityMaximum() if necessary
         """
 
-        q = self.quality
-        m = self.maxquality
+        quality = self.quality
+        max = self.maxquality
         
-        nq = min(q+value,m)
-        self.qualityChanged(actor, q, nq)
+        nq = min(quality+value, max)
+        self.qualityChanged(actor, quality, nq)
         
         self.quality = nq
 
-        if nq == m :
+        if nq == max :
             return self.qualityMaximum(actor)
 
 
@@ -103,10 +102,10 @@ class Improvable (Persistent):
         qualityMinimum() if necessary
         """
 
-        q = self.quality
+        quality = self.quality
         
-        nq = max(q-value,0)
-        self.qualityChanged(actor, q, nq)
+        nq = max(quality-value, 0)
+        self.qualityChanged(actor, quality, nq)
         
         self.quality = nq
         
@@ -114,7 +113,7 @@ class Improvable (Persistent):
             self.qualityMinimum(actor)
 
     
-    def qualityChanged (self,actor,old,new):
+    def qualityChanged (self, actor, old, new):
         
         """[Event method] Gets invoked on every improve/impair action
         @param old: quality before change
@@ -124,7 +123,7 @@ class Improvable (Persistent):
         pass
     
     
-    def qualityMaximum (self,actor):
+    def qualityMaximum (self, actor):
         
         """[Event method] Gets invoked, when quality is maximal
         after improve() has been called.
@@ -133,7 +132,7 @@ class Improvable (Persistent):
         pass
 
     
-    def qualityMinimum (self,actor):
+    def qualityMinimum (self, actor):
         
         """[Event method] Gets invoked, when quality is 0
         after impair() has been called.
@@ -167,7 +166,7 @@ class GradualImprovable (Improvable):
     def getMaxLevel (self):
         return max(self.levelstops.keys())
     
-    maxlevel = property(fget = getMaxLevel,\
+    maxlevel = property(fget = getMaxLevel, \
                         doc  = "The highest level defined in levelstops")
 
 
@@ -193,7 +192,7 @@ class GradualImprovable (Improvable):
                 return self.levelRaised(actor)
       
         
-    def levelRaised (self,actor):
+    def levelRaised (self, actor):
         
         """[Event method] Gets invoked after improve() raised
         level.

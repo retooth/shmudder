@@ -24,17 +24,17 @@
     (like an inventory or the ability to inflict damage)
  """
 
-from engine.ormapping import Reference, BackRef, Boolean, Integer, OneToOne
-from abstract.perception import Addressable, Perceivable, AddressableCollection
+from engine.ormapping import Persistent, Reference, BackRef
+from engine.ormapping import Boolean, Integer, OneToOne
+from abstract.perception import Addressable, Perceivable, callAdressables
 from abstract.evolvement import GradualImprovable, Improvable
-from basic.details import DetailCollection
 from basic.items import ItemCollection
 from engine.user import User
 from engine.client import GameHandler
 from basic.exceptions import ImprovementNotAllowed
 
 
-class BodyPart (Addressable) :
+class BodyPart (Addressable):
     
     """ Body part class for reusable items """
     
@@ -67,7 +67,7 @@ class Attribute (Improvable,
         self.collection = None
 
 
-    def improve (self,actor,value):
+    def improve (self, actor, value):
         """
         [player action] Gains attribute by value. Stops at maximum 
         and calls qualityMaximum() if necessary. Checks, if collection
@@ -80,7 +80,7 @@ class Attribute (Improvable,
             raise ImprovementNotAllowed("")
 
 
-class AttributeCollection (AddressableCollection):
+class AttributeCollection (Persistent):
 
     """ 
     @author: Fabian Vallon 
@@ -99,7 +99,6 @@ class AttributeCollection (AddressableCollection):
     character  = Reference()
 
     def __init__ (self):
-        AddressableCollection.__init__(self)
         self.bonus = 0
 
 
@@ -108,20 +107,21 @@ class AttributeCollection (AddressableCollection):
             return True
         return False
 
-    allowsimprovement = property(fget=allowsImprovement,doc="True if bonus > 0 or feature disabled")
+    allowsimprovement = property(fget = allowsImprovement, \
+                                 doc  = "True if bonus > 0 or feature disabled")
     
     
-    def addAttribute (self, a):
+    def addAttribute (self, attribute):
         """ Adds an attribute to the collection """
-        a.collection = self
+        attribute.collection = self
 
 
-    def removeAttribute (self, a):
-        """Removes attribute a from the collection"""
-        a.collection = None
+    def removeAttribute (self, attribute):
+        """Removes attribute attribute from the collection"""
+        attribute.collection = None
 
 
-    def callAttributes(self,keyword):
+    def callAttributes(self, keyword):
         """ 
         Calls every attribute in collection by keyword and
         returns responding attributes
@@ -129,8 +129,7 @@ class AttributeCollection (AddressableCollection):
         @param keyword: keyword, that should be checked 
         @rtype: list<Attribute>
         """
-        attributes = self.attributes
-        attributes = self.callCollectionItems(keyword, attributes)
+        attributes = callAdressables(keyword, self.attributes)
         return attributes
 
 
@@ -180,11 +179,11 @@ class VitalConstitution (Constitution):
         Constitution.__init__ (self)
     
     def qualityMinimum (self, actor):
+        """ [overwritten] invokes die method on character """
         self.character.die()
 
 
-class Character (Perceivable,
-                 DetailCollection):
+class Character (Perceivable):
 
     """ 
     @author: Fabian Vallon 
@@ -206,7 +205,6 @@ class Character (Perceivable,
     unsortedbodyparts = BackRef(BodyPart,"character")
       
     def __init__ (self):
-        DetailCollection.__init__(self)
         Perceivable.__init__(self)
         self.defaultlocation = None
         self.location = None
@@ -219,13 +217,13 @@ class Character (Perceivable,
         self.attributeset = AttributeCollection()
            
             
-    def addBodyPart (self, bp):
+    def addBodyPart (self, bodypart):
         """ Adds a body part to the character """
-        bp.character = self
+        bodypart.character = self
 
-    def removeBodyPart (self, bp):
+    def removeBodyPart (self, bodypart):
         """ Removes a body part from the character """
-        bp.character = None
+        bodypart.character = None
 
     def getBodyParts (self):
         # this method will be called by reusable.use(). by standard
@@ -238,44 +236,44 @@ class Character (Perceivable,
         freebp = []
         usedbp = []
         
-        for bp in bplist :
+        for bodypart in bplist :
         
-            if bp.item == None :
-                freebp.append(bp)
+            if bodypart.item == None :
+                freebp.append(bodypart)
             else :
-                usedbp.append(bp)
+                usedbp.append(bodypart)
         
         # rebuild body parts list by two categories
         newlist = freebp + usedbp
         return newlist
         
-    bodyparts = property(fget = getBodyParts,\
+    bodyparts = property(fget = getBodyParts, \
                          doc  = "Character's bodyparts (unused first)")
 
 
     def callBodyParts (self, keyword):
-        return self.callCollectionItems(keyword, self.bodyparts)
+        return callAdressables(keyword, self.bodyparts)
     
     
-    def addConstitution (self,c):        
+    def addConstitution (self, character):        
         """Adds constitution to the character"""
-        c.character = self
+        character.character = self
 
 
-    def removeConstitution (self,c):
+    def removeConstitution (self, character):
         """Removes constitution from the Character"""
-        c.character = None
+        character.character = None
 
              
-    def getConstitutionOfType (self,ctype):
+    def getConstitutionOfType (self, ctype):
         """
         will return constitution object for type <ctype>
         @rtype: constitution or None
         """
         clist = self.constitution
-        for c in clist:
-            if isinstance(c,ctype):
-                return c
+        for constitution in clist:
+            if isinstance(constitution, ctype):
+                return constitution
                 break
         return None    
 
@@ -287,10 +285,8 @@ class Character (Perceivable,
  
     
     def resetConstitution (self):
-        
         """ for convenience. resets every constitution to
         its maximum """
-        
         for c in self.constitution :
             c.reset()
 
@@ -303,14 +299,14 @@ class Character (Perceivable,
         pass    
         
     
-    def locationChanged (self,old,new):
+    def locationChanged (self, old, new):
         """ [event method] gets invoked if characters
         leaves room """
         pass
     
     
         
-class CharacterCollection (AddressableCollection):
+class CharacterCollection (object):
 
     """ 
     @author: Fabian Vallon 
@@ -320,43 +316,39 @@ class CharacterCollection (AddressableCollection):
     
     A collection made for Characters. Mainly used in
     Room Class, but in theory animal cages and similar
-    objects are possible
+    objects are possible.
+    Volatile Mixin
     """
 
     characters = BackRef(Character,"location")
 
-    def __init__(self):
-        AddressableCollection.__init__(self)
-
-
-    def addCharacter (self, c):
+    def addCharacter (self, character):
         """ Adds character to collection """
-        c.location = self
+        character.location = self
         
 
-    def removeCharacter (self, c):
+    def removeCharacter (self, character):
         """ Removes character from the collection """
-        c.location = None      
+        character.location = None      
 
 
-    def callCharacters (self,keyword):  
+    def callCharacters (self, keyword):  
         """ 
         Calls every character in collection by keyword and
         returns responding characters
         @rtype: list<Character>
         """
-        chars = self.characters
-        chars = self.callCollectionItems(keyword,chars)
+        chars = callAdressables(keyword, self.characters)
         return chars
     
     
-    def showCharacters (self,actor):
+    def showCharacters (self, actor):
         """ Shows every character in collection """
         for c in self.characters :
             c.showShort(actor)
     
     
-    def showOtherCharacters (self,actor):
+    def showOtherCharacters (self, actor):
         """ Shows every character in collection except actor """
         for c in self.characters :
             if c != actor :
@@ -364,7 +356,7 @@ class CharacterCollection (AddressableCollection):
 
 
 
-class Inventory (ItemCollection):
+class Inventory (Persistent, ItemCollection):
 
     """ 
     @author: Fabian Vallon 
@@ -377,7 +369,7 @@ class Inventory (ItemCollection):
 
     character = OneToOne(Character,"inventory")
 
-    def showItems (self,actor):
+    def showItems (self, actor):
         actor.receiveMessage("-"*20)
         ItemCollection.showItems(self, actor)
         actor.receiveMessage("-"*20)
@@ -421,7 +413,7 @@ class Player (GameHandler,
     
     
     @staticmethod
-    def showTypeInfo(handler):    
+    def showTypeInfo (handler):    
         """
         should show some info about the player type
         @raise NotImplementedError: always 
@@ -438,7 +430,7 @@ class Player (GameHandler,
         raise NotImplementedError ("Lack of showInfoScreen method")
         
         
-    def choose (self,handler):
+    def choose (self, handler):
         """ [registerhandler action] gets invoked, if
         player creation process is done """
         handler.client.handler = self
@@ -453,7 +445,7 @@ class Player (GameHandler,
         self.__contextinit__()
     
     
-    def showShort (self,actor):
+    def showShort (self, actor):
         name = self.skeywords[0]
         actor.receiveMessage(name)
 

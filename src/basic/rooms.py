@@ -16,10 +16,10 @@
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from engine.ormapping import Reference, BackRef, Boolean
-from abstract.perception import Addressable, Perceivable
-from abstract.causality import *
-from basic.details import DetailCollection
+from engine.ormapping import Boolean, Reference, BackRef
+from abstract.perception import Addressable, Perceivable, callAdressables
+from abstract.causality import SignalEmitter, SignalListener
+from abstract.causality import M2M_RoomEmitter, M2M_RoomListener
 from basic.characters import CharacterCollection
 from basic.items import ItemCollection
 from random import choice
@@ -51,7 +51,6 @@ class Exit (Addressable):
 
 
 class Room (Perceivable,
-            DetailCollection,
             CharacterCollection,
             ItemCollection):
     
@@ -74,7 +73,6 @@ class Room (Perceivable,
 
     def __init__(self):
         Perceivable.__init__(self)
-        DetailCollection.__init__(self)
         CharacterCollection.__init__(self)
         ItemCollection.__init__(self)
     
@@ -104,47 +102,47 @@ class Room (Perceivable,
     def removeEmitter (self, e):
         """ Removes static (!) SignalEmitter e from this room """
         links = self.emitterlinks
-        for l in links:
-            if l.emitter == e:
-                l.__delete__()
+        for link in links:
+            if link.emitter == e:
+                del link
     
     
     def getEmitters (self):
         emitters = []
-        for l in self.emitterlinks:
-            emitters.append(l.emitter)
-        for a in self.all:
-            if isinstance(a,SignalEmitter):
-                emitters.append(a)
+        for link in self.emitterlinks:
+            emitters.append(link.emitter)
+        for thing in self.all:
+            if isinstance(thing, SignalEmitter):
+                emitters.append(thing)
         return emitters
 
-    emitters = property(fget = getEmitters,\
+    emitters = property(fget = getEmitters, \
                         doc  = "SignalEmitters linked to this room")
 
 
     def addListener (self, l):
         """ Adds static(!) SignalListener l to this room """
-        link = M2M_RoomListener(self,l)
+        link = M2M_RoomListener(self, l)
   
     
     def removeListener (self, l):      
         """ Removes (static) SignalListener l from this room """
         links = self.listenerlinks
-        for l in links:
-            if l.emitter == l:
-                l.__delete__()
+        for link in links:
+            if link.emitter == l:
+                del link
     
     
     def getListeners (self):
         listeners = []
-        for l in self.listenerlinks:
-            listeners.append(l.listener)
-        for a in self.all:
-            if isinstance(a,SignalListener):
-                listeners.append(a)
+        for link in self.listenerlinks:
+            listeners.append(link.listener)
+        for thing in self.all:
+            if isinstance(thing, SignalListener):
+                listeners.append(thing)
         return listeners
 
-    listeners = property(fget = getListeners,\
+    listeners = property(fget = getListeners, \
                          doc  = "SignalListeners linked to this room")
 
 
@@ -177,9 +175,9 @@ class Room (Perceivable,
         shares message with players in the room.
         @param exceptc: a list of players, that will be omitted
         """
-        for c in self.characters:
-            if c not in exceptc:
-                c.receiveMessage(message)
+        for character in self.characters:
+            if character not in exceptc:
+                character.receiveMessage(message)
     
     
     def hasExit (self, exitname):
@@ -194,9 +192,9 @@ class Room (Perceivable,
         Connects another room to this one.
         @param *dirkeys: keywords for direction
         """
-        e = Exit(self,neighbor)
+        rexit = Exit(self, neighbor)
         for keyword in dirkeys :
-            e.addSingularKeyword(keyword)
+            rexit.addSingularKeyword(keyword)
         
 
     def showLong (self, actor):
@@ -216,7 +214,7 @@ class Room (Perceivable,
         
         # TODO: party autofollow
         
-        exits = self.callCollectionItems(keyword, self.exits)
+        exits = callAdressables(keyword, self.exits)
         
         if not exits:
             raise NoSuchDirection("")
@@ -241,10 +239,10 @@ class Room (Perceivable,
         self.removeCharacter(actor)
         newplace.addCharacter(actor)
         
-        actor.locationChanged(self,newplace,keyword)
+        actor.locationChanged(self, newplace, keyword)
         
         for item in actor.inventory.items:
-            item.locationChanged(self,newplace,keyword)
+            item.locationChanged(self, newplace, keyword)
         
 
     
@@ -252,8 +250,8 @@ class Room (Perceivable,
         """ convenience method to leave the
         room in a random direction """
         if self.exits :
-            dir = choice(self.exits)
-            self.leave(actor,dir)
+            direction = choice(self.exits)
+            self.leave(actor, direction)
         
     
     def leaveVeryPanically (self, actor, panic):
@@ -269,10 +267,10 @@ class Room (Perceivable,
             
             # recursion
             newroom = actor.location
-            newroom.leaveVeryPanically(actor,(panic-1))
+            newroom.leaveVeryPanically(actor, (panic-1))
 
         
-    def teleport (self,actor,hop):
+    def teleport (self, actor, hop):
         """ convenience method to jump to another room """
         self.removeCharacter(actor)
         hop.addCharacter(actor)

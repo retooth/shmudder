@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Perceivable, AddressableCollection
+from abstract.perception import Perceivable, callAdressables
 from engine.ormapping import Reference, BackRef, Boolean
 
 class Detail (Perceivable):
@@ -46,57 +46,3 @@ class Detail (Perceivable):
         return self.collection.location
     
     location = property(getLocation)
-
-
-class DetailCollection (AddressableCollection):
-
-    """ 
-    @author: Fabian Vallon 
-    @license: U{GPL v3<http://www.gnu.org/licenses/>}
-    @version: 0.1
-    @since: 0.1
-    
-    Class for every detailed thing
-    """
-
-    details = BackRef(Detail,"collection")
-
-    def __init__ (self):
-        AddressableCollection.__init__(self)
-
-
-    def addDetail (self, detail):
-
-        """ Adds a detail to the collection """
-        detail.collection = self
-
-        
-    def removeDetail (self, detail):
-
-        """Removes a detail from the collection"""
-        detail.collection = None
-
-        
-    def callDetails (self, keyword):
-        
-        """ 
-        calls every detail in collection by keyword and
-        returns responding details
-        
-        @rtype: list<Detail>
-        """
-     
-        details = self.details
-        details = self.callCollectionItems(keyword, details)
-        return details
-
-    
-    def showDetails (self, actor):
-        
-        """ [player action] shows every detail in collection """
-        
-        details = self.details[:]
-        
-        details = filter(lambda x : x.explicit,details)
-        for d in details :
-            d.showShort(actor)

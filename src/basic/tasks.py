@@ -20,37 +20,47 @@ from twisted.internet.task import LoopingCall
 
 class Fights (LoopingCall):
     
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+
+    Task for Characters vs Character Fights (based on LoopingCall).
+    """
+
     
-    def __init__ (self,fighter):
+    def __init__ (self, fighter):
         LoopingCall.__init__(self, self.run)
         self.fighter = fighter
         self.fqueue = []    
     
     
-    def getOpponents(self):
+    def getOpponents (self):
         return self.fqueue
     
-    opponents = property(getOpponents)
+    opponents = property(getOpponents, \
+                         doc = "gets all current opponents")
     
     
-    def addEnemy (self,enemy):
+    def addEnemy (self, enemy):
         self.fqueue.append(enemy)
     
     
-    def removeEnemy (self,enemy):
+    def removeEnemy (self, enemy):
         self.fqueue.remove(enemy)
     
     
     def reset (self):
-            
+        """ Clears the fight queue and deletes the
+        associated player from other fight queues """
         for enemy in self.opponents:
             enemy.fights.removeEnemy(self.fighter)
-    
         self.fqueue = []
     
     
     def run (self):
-        
+        """ LoopingCall method. """
         room = self.fighter.location
         if not room :
             return 

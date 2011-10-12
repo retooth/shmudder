@@ -58,7 +58,7 @@ class AmmoDrivenWeapon (Weapon):
         self.nextammo = None
 
 
-    def isSuitableAmmo (self,a):
+    def isSuitableAmmo (self, ammo):
         """ should return bool, if ammo a is suitable """
         clsn = self.__class__.__name__
         raise NotImplementedError(clsn+": Lack of isSuitableAmmo method")
@@ -83,7 +83,7 @@ class AmmoDrivenWeapon (Weapon):
             inv   = actor.inventory
             items = inv.allitems        
             
-            ammo  = filter(self.isSuitableAmmo,items)
+            ammo  = filter(self.isSuitableAmmo, items)
             
             if not ammo:
                 self.outOfAmmo(actor)
@@ -110,5 +110,5 @@ class AmmoDrivenWeapon (Weapon):
         if ammo.collection is not actor.inventory :
             ammo.takeOut(actor)
             
-        ammo.inflictDamage(actor,opponent)
+        ammo.inflictDamage(actor, opponent)
             

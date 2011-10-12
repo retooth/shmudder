@@ -2,8 +2,9 @@
 
 class ContextError (StandardError):
     def __init__(self, arg):
+        StandardError.__init__(self)
         self.args = arg 
-        
+    
 class PlayerError (ContextError):
     pass
 

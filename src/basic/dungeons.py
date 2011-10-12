@@ -42,23 +42,24 @@ class Dungeon (Persistent):
         return self
     
     
-    def addRoom (self,newr):
+    def addRoom (self, room):
         """ Adds a new room to the dungeon """
-        newr.dungeon = self
+        room.dungeon = self
     
     
-    def removeRoom (self,r):
+    def removeRoom (self, room):
         """ Removes a room from the dungeon"""
-        r.dungeon = None
+        room.dungeon = None
     
     
     def getCharacters (self):
         characters = []
-        for r in self.rooms:
-            characters += r.characters
+        for room in self.rooms:
+            characters += room.characters
         return characters
     
-    characters = property(fget=getCharacters,doc="A list of all characters in this dungeon")
+    characters = property(fget=getCharacters, \
+                          doc="A list of all characters in this dungeon")
 
 
 class QuestTask (Persistent):
@@ -77,7 +78,7 @@ class QuestTask (Persistent):
     complete = Boolean()
     completionlistener = Reference()
     
-    def __init__ (self,listener,name):
+    def __init__ (self, listener, name):
         Persistent.__init__(self)
         self.name = name
         self.complete = False
@@ -120,29 +121,31 @@ class QuestCompletionListener (SignalListener):
     tasks    = BackRef(QuestTask,"completionlistener")
     complete = Boolean()
     
-    def __init__ (self,dungeon):
+    def __init__ (self, dungeon):
         SignalListener.__init__(self)
         self.dungeon = dungeon
         self.complete = False
     
     
     def addTask (self, name):
-        t = QuestTask(self,name)
+        task = QuestTask(self, name)
     
         
     def signalReceived (self, signal):     
         if self.complete:
             return
-        if not isinstance(signal,TaskCompletionSignal):
+        if not isinstance(signal, TaskCompletionSignal):
             return
         name = signal.taskname
-        for t in self.tasks:
-            if t.name == name :
-                t.complete = True
+        for task in self.tasks:
+            if task.name == name :
+                task.complete = True
         self.checkCompletion()
          
          
     def checkCompletion (self):
+        """ checks for completed tasks and invokes
+        dungeons questComplete method if necessary """
         for t in self.tasks :
             if not t.complete:
                 return
@@ -172,7 +175,7 @@ class QuestDungeon (Dungeon):
         self.completionlistener = QuestCompletionListener(self)
     
     
-    def getClone(self,identifier):
+    def getClone(self, identifier):
         """ Returns clone for identifier """
         dungeons = self.getAllInstances()
         for d in dungeons:
@@ -184,9 +187,11 @@ class QuestDungeon (Dungeon):
         return newd
     
     
-    def addRoom (self,newr):
-        Dungeon.addRoom(self, newr)
-        newr.addListener(self.completionlistener)
+    def addRoom (self, room):
+        """ adds room to dungeon and adds 
+        QuestCompletionListener to room"""
+        Dungeon.addRoom(self, room)
+        room.addListener(self.completionlistener)
     
     
     def addTask (self, name):
