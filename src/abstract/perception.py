@@ -13,7 +13,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from engine.ormapping import Persistent, PickleType, String, BackRef
+from engine.ormapping import Persistent, PickleType 
+from engine.ormapping import Boolean, String, BackRef
 from basic.details import Detail
 from abstract.exceptions import *
 
@@ -114,7 +115,8 @@ class Perceivable (Addressable):
     feeling          = String()
     sound            = String()
     
-    details = BackRef(Detail,"collection")
+    explicit = Boolean()
+    details  = BackRef(Detail,"collection")
     
     def __init__ (self):
         Addressable.__init__(self)
@@ -130,6 +132,8 @@ class Perceivable (Addressable):
         [player action] Sends shortdescription to the player or 
         raises Invisible exception
         """
+        if not self.explicit:
+            return
         if self.shortdescription:
             actor.receiveMessage(self.shortdescription)
             return

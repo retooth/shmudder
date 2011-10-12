@@ -209,6 +209,7 @@ class Character (Perceivable):
         self.defaultlocation = None
         self.location = None
         self.communicator = None
+        self.explicit = True
     
     def __initdefaults__ (self):
         """ Sets character attributes to basic defaults """

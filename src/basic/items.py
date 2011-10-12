@@ -42,6 +42,7 @@ class Item (Perceivable):
     def __init__ (self):
         Perceivable.__init__(self)
         self.collection = None
+        self.explicit = True
 
 
     def getLocation (self):
