@@ -17,7 +17,8 @@
 
 from abstract.perception import Perceivable, callAdressables
 from collections import defaultdict
-from engine.ormapping import Reference, BackRef, PickleType, Boolean
+from engine.ormapping import Reference, BackRef, PickleType
+from engine.ormapping import Boolean, Integer
 from mixins.misc import Groupable
 from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction 
 from basic.exceptions import ItemNotInUse, UnusableItem
@@ -38,10 +39,12 @@ class Item (Perceivable):
     """
 
     collection = Reference()
+    weight     = Integer()
 
     def __init__ (self):
         Perceivable.__init__(self)
         self.collection = None
+        self.weight = 0
         self.explicit = True
 
 
@@ -60,6 +63,7 @@ class Item (Perceivable):
     
     
     def use (self, actor):
+        """ [player action] raises UnusableItem """
         raise UnusableItem("")
 
     
