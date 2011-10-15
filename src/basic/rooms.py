@@ -17,7 +17,7 @@
 
 
 from engine.ormapping import Boolean, Reference, BackRef
-from abstract.perception import Addressable, Perceivable, callAdressables
+from abstract.perception import Addressable, DetailedPerceivable, callAdressables
 from abstract.causality import SignalEmitter, SignalListener
 from abstract.causality import M2M_RoomEmitter, M2M_RoomListener
 from basic.characters import CharacterCollection
@@ -50,7 +50,7 @@ class Exit (Addressable):
 
 
 
-class Room (Perceivable,
+class Room (DetailedPerceivable,
             CharacterCollection,
             ItemCollection):
     
@@ -72,7 +72,7 @@ class Room (Perceivable,
     
 
     def __init__(self):
-        Perceivable.__init__(self)
+        DetailedPerceivable.__init__(self)
         CharacterCollection.__init__(self)
         ItemCollection.__init__(self)
     

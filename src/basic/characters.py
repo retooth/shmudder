@@ -26,7 +26,7 @@
 
 from engine.ormapping import Persistent, Reference, BackRef
 from engine.ormapping import Boolean, Integer, OneToOne
-from abstract.perception import Addressable, Perceivable, callAdressables
+from abstract.perception import Addressable, DetailedPerceivable, callAdressables
 from abstract.evolvement import GradualImprovable, Improvable
 from basic.items import ItemCollection
 from engine.user import User
@@ -99,6 +99,7 @@ class AttributeCollection (Persistent):
     character  = Reference()
 
     def __init__ (self):
+        Persistent.__init__(self)
         self.bonus = 0
 
 
@@ -183,7 +184,7 @@ class VitalConstitution (Constitution):
         self.character.die()
 
 
-class Character (Perceivable):
+class Character (DetailedPerceivable):
 
     """ 
     @author: Fabian Vallon 
@@ -205,7 +206,7 @@ class Character (Perceivable):
     unsortedbodyparts = BackRef(BodyPart,"character")
       
     def __init__ (self):
-        Perceivable.__init__(self)
+        DetailedPerceivable.__init__(self)
         self.defaultlocation = None
         self.location = None
         self.communicator = None

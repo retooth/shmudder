@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from abstract.perception import Perceivable, callAdressables
+from abstract.perception import DetailedPerceivable, callAdressables
 from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType
 from engine.ormapping import Boolean, Integer
@@ -24,7 +24,7 @@ from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction
 from basic.exceptions import UneatableItem, UnwearableItem, UndrinkableItem 
 from basic.exceptions import ItemNotInUse, UnusableItem
 
-class Item (Perceivable):
+class Item (DetailedPerceivable):
 
     """ 
     @author: Fabian Vallon 
@@ -43,7 +43,7 @@ class Item (Perceivable):
     weight     = Integer()
 
     def __init__ (self):
-        Perceivable.__init__(self)
+        DetailedPerceivable.__init__(self)
         self.collection = None
         self.weight = 0
         self.explicit = True
@@ -359,6 +359,7 @@ class Clothing (ReusableItem):
     def putOn (self, actor):
         self.use(actor)
     
+    
     def takeOff (self, actor):
         self.putAway(actor)
 
@@ -377,6 +378,7 @@ class Weapon (ReusableItem):
     
     def draw (self, actor):
         self.use(actor)
+    
     
     def inflictDamage (self, actor, opponent): 
         """ should implement damage in fights """
@@ -403,6 +405,7 @@ class Food (ReusableItem):
         """ gets decremented after every bite. if 0, item will be
         deleted. 1 by default """
         
+        
     def eat (self, actor):
         self.use(actor)
         self.leftover = self.leftover - 1
@@ -411,6 +414,7 @@ class Food (ReusableItem):
             self.foodFinished (self,actor)
             return
         self.putAway(actor)
+    
     
     def foodFinished (self, actor):
         """ [event method] gets called if leftover hits 0 """
@@ -435,6 +439,7 @@ class Beverage (ReusableItem):
         self.leftover = 1
         """ gets decremented after every bite. if 0, item will be
         deleted. 1 by default """
+    
         
     def drink (self, actor):
         self.use(actor)
@@ -444,6 +449,7 @@ class Beverage (ReusableItem):
             self.beverageFinished (self,actor)
             return
         self.putAway(actor)
+    
     
     def beverageFinished (self, actor):
         """ [event method] gets called if leftover hits 0 """

@@ -109,7 +109,7 @@ class BasicContext (Context):
         self.addSemantics("take (.+)",take)
         self.addSemantics("throw (.+) away",throwAway)
         self.addSemantics("use (.+)",use)
-        self.addSemantics("put (.+) away",unuse)
+        self.addSemantics("put (.+) away",putAway)
         self.addSemantics("put (.+) in (.+)",putInto)
         self.addSemantics("take (.+)",takeOut)
     
@@ -163,3 +163,7 @@ class BasicContext (Context):
         self.addExceptionHandling(NoSound, "You hear no sound")
         self.addExceptionHandling(NoOdor, "It doesn't smell special")
         self.addExceptionHandling(NoFeeling, "It doesn't feel special")
+        
+        self.addExceptionHandling(UneatableItem, "You can't eat that")
+        self.addExceptionHandling(UndrinkableItem, "You can't drink that")
+        self.addExceptionHandling(UnwearableItem, "You can't wear that")

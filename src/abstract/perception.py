@@ -13,9 +13,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with Shmudder.  If not, see <http://www.gnu.org/licenses/>.
 
-from engine.ormapping import Persistent, PickleType 
+from engine.ormapping import Persistent, PickleType, Reference 
 from engine.ormapping import Boolean, String, BackRef
-from basic.details import Detail
 from abstract.exceptions import *
 
 
@@ -116,7 +115,6 @@ class Perceivable (Addressable):
     sound            = String()
     
     explicit = Boolean()
-    details  = BackRef(Detail,"collection")
     
     def __init__ (self):
         Addressable.__init__(self)
@@ -182,15 +180,52 @@ class Perceivable (Addressable):
             actor.receiveMessage(self.sound)
             return
         raise NoSound("")
+
+
+class Detail (Perceivable):
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Details are non-portable objects made to provide
+    a better description of things in your MUD
+    """
+
+    collection = Reference()
+    explicit   = Boolean()
+    
+    def __init__ (self):
+        Perceivable.__init__(self)
+        self.explicit = False
+        """ Set this to True, if you want your Detail
+        explicitely listed in room descriptions.
+        (Don't forget to implement showShort)"""
+        
+    def getLocation (self):
+        if not self.collection:
+            return
+        return self.collection.location
+    
+    location = property(getLocation)
+
+
+class DetailedPerceivable (Perceivable):
+    
+    details  = BackRef(Detail,"collection")
+    
+    def __init__ (self):
+        Perceivable.__init__(self)
+    
     
     def addDetail (self, detail):
-
         """ Adds a detail to the collection """
         detail.collection = self
 
         
     def removeDetail (self, detail):
-
         """Removes a detail from the collection"""
         detail.collection = None
 
@@ -209,3 +244,4 @@ class Perceivable (Addressable):
         """ [player action] shows every detail in collection """
         for detail in self.details :
             detail.showShort(actor)
+            

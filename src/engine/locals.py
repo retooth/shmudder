@@ -8,7 +8,6 @@ from abstract.evolvement import *
 from abstract.perception import *
 
 from basic.characters import *
-from basic.details import *
 from basic.dungeons import *
 from basic.items import *
 from basic.rooms import *
