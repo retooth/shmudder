@@ -104,13 +104,13 @@ class BasicContext (Context):
         self.addSemantics("(runter)",walk)
         
         ######################################################
-        
+
+        self.addSemantics("nimm (.+) aus (.+)",takeOut)        
         self.addSemantics("nimm (.+)",take)
         self.addSemantics("wirf (.+) weg",throwAway)
         self.addSemantics("benutze (.+)",use)
         self.addSemantics("lege (.+) weg",putAway)
         self.addSemantics("stecke (.+) in (.+)",putInto)
-        self.addSemantics("nimm (.+) aus (.+)",takeOut)
     
         ######################################################
         

@@ -20,6 +20,7 @@
 #################################################
 
 from engine.ormapping import Store
+from abstract.perception import callAdressables
 from basic.exceptions import UnknownPlayer, BadPassword
 from basic.exceptions import UnknownPlayerType, PlayerExists
 from hashlib import sha512
@@ -135,18 +136,22 @@ from basic.exceptions import DetailNotFound
 
 def examine (player, arguments):        
     """ examines something in the room or inventory """
+    
     room    = player.location    
     exstr   = arguments[0]
-    details = room.callDetails(exstr)
-    items   = player.inventory.callItems(exstr)
-    chars   = room.callCharacters(exstr)
     
-    if not (details or items) :
+    addrspace = []
+    addrspace += room.details
+    addrspace += player.inventory.items
+    addrspace += room.items
+    addrspace += room.characters
+
+    things = callAdressables(exstr, addrspace)
+    
+    if not things :
         raise DetailNotFound("")
 
-    all = details + items + chars
-
-    for obj in all:
+    for obj in things:
         obj.showLong(player)    
 
 def smell (player, arguments):        

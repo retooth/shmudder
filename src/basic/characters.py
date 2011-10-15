@@ -301,7 +301,7 @@ class Character (DetailedPerceivable):
         pass    
         
     
-    def locationChanged (self, old, new):
+    def locationChanged (self, old, new, keyword):
         """ [event method] gets invoked if characters
         leaves room """
         pass

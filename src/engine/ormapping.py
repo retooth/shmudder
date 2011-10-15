@@ -81,9 +81,11 @@ class OffcutList (object):
         
         if index < self.maxfree:
             self.gaps.append(index)
-        
+        print self.objects
         self.gaps = filter(lambda x: x < self.maxfree, self.gaps)
         
+        s = Store()
+        s.commit()
         
     def append (self, value):
         free = self.freespot
