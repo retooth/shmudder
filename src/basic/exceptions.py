@@ -86,6 +86,15 @@ class ItemNotInUse (PlayerError):
 class UnusableItem (PlayerError):
     pass
 
+class UneatableItem (PlayerError):
+    pass
+
+class UnwearableItem (PlayerError):
+    pass
+
+class UndrinkableItem (PlayerError):
+    pass
+
 class UnsuitableBin (PlayerError):
     pass
 

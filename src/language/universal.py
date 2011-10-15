@@ -66,9 +66,9 @@ class Context (object):
     def parse (self,command):        
         """ parses a string according to context semantics """
         for s in self.semantics:
-            arguments = s.match(command)
-            if arguments :
-                return (s.actionf,s.regex,arguments)
+            cargs = s.match(command)
+            if cargs :
+                return (s.actionf, cargs)
                 break
         raise UnknownAction("")
         

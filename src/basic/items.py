@@ -20,7 +20,8 @@ from collections import defaultdict
 from engine.ormapping import Reference, BackRef, PickleType
 from engine.ormapping import Boolean, Integer
 from mixins.misc import Groupable
-from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction 
+from basic.exceptions import NotABin, UnsuitableBin, ImpossibleAction
+from basic.exceptions import UneatableItem, UnwearableItem, UndrinkableItem 
 from basic.exceptions import ItemNotInUse, UnusableItem
 
 class Item (Perceivable):
@@ -66,6 +67,30 @@ class Item (Perceivable):
         """ [player action] raises UnusableItem """
         raise UnusableItem("")
 
+
+    def putAway (self, actor):
+        raise ImpossibleAction("")
+
+
+    def draw (self, actor):
+        raise UnusableItem("")
+
+    
+    def drink (self, actor):
+        raise UndrinkableItem("")
+    
+    
+    def eat (self, actor):
+        raise UneatableItem("")
+    
+    
+    def putOn (self, actor):
+        raise UnwearableItem("")
+    
+    
+    def takeOff (self, actor):
+        raise ImpossibleAction("")
+    
     
     def isInUse (self):
         """ [internal] Just a default to avoid type checking
@@ -86,7 +111,7 @@ class Item (Perceivable):
         """ [player action] Moves item from inventory to room """
         # if an item is in use, it should be unused first
         if self.isInUse() :
-            self.unuse(actor)
+            self.putAway(actor)
             
         room = actor.location
         inv  = actor.inventory
@@ -98,9 +123,9 @@ class Item (Perceivable):
 
         """ [player action] Moves item from inventory to another inventory """
 
-        # if an item is in use, it should be unused first
+        # if an item is in use, it should be put away first
         if self.isInUse() :
-            self.unuse(actor)
+            self.putAway(actor)
 
         inv  = actor.inventory
         inv2 = receiver.inventory
@@ -114,9 +139,9 @@ class Item (Perceivable):
         if not isinstance(container, ItemCollection):
             raise NotABin("")
 
-        # if an item is in use, it should be unused first
+        # if an item is in use, it should be put away first
         if self.isInUse() :
-            self.unuse(actor)
+            self.putAway(actor)
       
         self.collection.removeItem(self)
         container.addItem(self)
@@ -125,6 +150,7 @@ class Item (Perceivable):
     def takeOut (self, actor):
         """ [player action] Takes item out of container """
         actor.inventory.addItem(self)
+
 
     def loose (self, actor):
         """ [player action] Looses item """
@@ -284,7 +310,7 @@ class ReusableItem (Item):
             slots = actor.callBodyParts(slot)
             slots = filter(lambda x: x.item != self, slots)
             if not slots :
-                self.unuse(actor)
+                self.putAway(actor)
                 raise ImpossibleAction("")
             
             bp = slots[0]
@@ -297,9 +323,9 @@ class ReusableItem (Item):
         self.inuse = True
 
             
-    def unuse (self, actor):
+    def putAway (self, actor):
         
-        """ [player action] Unuses the item """
+        """ [player action] puts the item back into inventory """
 
         if not self.isInUse() :
             raise ItemNotInUse("")
@@ -333,6 +359,106 @@ class ReusableItem (Item):
         return False
 
 
-# TODO:
 class Clothing (ReusableItem):
-    pass
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+
+    Implements putOn and takeOff methods
+    """
+    
+    def putOn (self, actor):
+        self.use(actor)
+    
+    def takeOff (self, actor):
+        self.putAway(actor)
+
+
+class Weapon (ReusableItem):
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Interface specification for weapons. Implements
+    draw method
+    """
+    
+    def draw (self, actor):
+        self.use(actor)
+    
+    def inflictDamage (self, actor, opponent): 
+        """ should implement damage in fights """
+        clsn = self.__class__.__name__
+        raise NotImplementedError(clsn + " should have a inflictDamage method")
+
+
+class Food (ReusableItem):
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Implements eat method
+    """
+    
+    leftover = Integer()
+    
+    def __init__ (self):
+        ReusableItem.__init__(self)
+        self.leftover = 1
+        """ gets decremented after every bite. if 0, item will be
+        deleted. 1 by default """
+        
+    def eat (self, actor):
+        self.use(actor)
+        self.leftover = self.leftover - 1
+        if not self.leftover:
+            del self
+            self.foodFinished (self,actor)
+            return
+        self.putAway(actor)
+    
+    def foodFinished (self, actor):
+        """ [event method] gets called if leftover hits 0 """
+        pass
+    
+
+class Beverage (ReusableItem):
+    
+    """ 
+    @author: Fabian Vallon 
+    @license: U{GPL v3<http://www.gnu.org/licenses/>}
+    @version: 0.1
+    @since: 0.1
+    
+    Implements drink method
+    """
+    
+    leftover = Integer()
+    
+    def __init__ (self):
+        ReusableItem.__init__(self)
+        self.leftover = 1
+        """ gets decremented after every bite. if 0, item will be
+        deleted. 1 by default """
+        
+    def drink (self, actor):
+        self.use(actor)
+        self.leftover = self.leftover - 1
+        if not self.leftover:
+            del self
+            self.beverageFinished (self,actor)
+            return
+        self.putAway(actor)
+    
+    def beverageFinished (self, actor):
+        """ [event method] gets called if leftover hits 0 """
+        pass

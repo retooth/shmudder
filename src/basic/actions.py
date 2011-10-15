@@ -25,7 +25,7 @@ from basic.exceptions import UnknownPlayerType, PlayerExists
 from hashlib import sha512
 
  
-def login (handler, regex, arguments):
+def login (handler, arguments):
     """ gets invoked after player typed login name """
     s = Store()    
     loginstr = arguments[0]
@@ -42,7 +42,7 @@ def login (handler, regex, arguments):
     handler.context = type(handler).passwordcontext()
 
 
-def password (handler, regex, arguments):
+def password (handler, arguments):
     """ gets invoked after player typed password """
     password = arguments[0]
     
@@ -56,17 +56,17 @@ def password (handler, regex, arguments):
     handler.wannabe.wakeup(handler)
         
         
-def logout (player, regex, arguments):
+def logout (player, arguments):
     """ logs player out """
     player.logout()
 
 
-def register (handler, regex, arguments):
+def register (handler, arguments):
     """ starts register process """
     handler.switchToRegisterHandler()
 
 
-def chooseCharacter (handler, regex, arguments):
+def chooseCharacter (handler, arguments):
     """ chooses character type in register process """
     keyword = arguments[0]
     playert = handler.callPlayerType(keyword)
@@ -78,7 +78,7 @@ def chooseCharacter (handler, regex, arguments):
     handler.nextContext()
         
 
-def showCharacterChoiceInfo (handler, regex, arguments):
+def showCharacterChoiceInfo (handler, arguments):
     """ 
     shows an info screen about a character type 
     in register process 
@@ -92,7 +92,7 @@ def showCharacterChoiceInfo (handler, regex, arguments):
     playert.showTypeInfo(handler)
 
 
-def chooseName (handler, regex, arguments):
+def chooseName (handler, arguments):
     """ determines the player's name in register process """
     name = arguments[0]
     
@@ -108,7 +108,7 @@ def chooseName (handler, regex, arguments):
     handler.nextContext()
 
 
-def choosePassword (handler, regex, arguments):        
+def choosePassword (handler, arguments):        
     """ chooses player's password in register process """
     password = arguments[0]
     handler.wannabe.password = password
@@ -118,12 +118,12 @@ def choosePassword (handler, regex, arguments):
 # player properties
 #################################################
 
-def showInfo (player, regex, arguments):
+def showInfo (player, arguments):
     """ forwarder to player's showInfoScreen method """
     player.showInfoScreen()
 
 
-def showInventory (player, regex, arguments):
+def showInventory (player, arguments):
     """ invokes showItems on player's inventory """   
     inventory = player.inventory
     inventory.showItems(actor=player)
@@ -133,7 +133,7 @@ def showInventory (player, regex, arguments):
 
 from basic.exceptions import DetailNotFound
 
-def examine (player, regex, arguments):        
+def examine (player, arguments):        
     """ examines something in the room or inventory """
     room    = player.location    
     exstr   = arguments[0]
@@ -149,7 +149,7 @@ def examine (player, regex, arguments):
     for obj in all:
         obj.showLong(player)    
 
-def smell (player, regex, arguments):        
+def smell (player, arguments):        
     """ smells something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
@@ -165,7 +165,7 @@ def smell (player, regex, arguments):
     for obj in all:
         obj.smell(player)    
 
-def listen (player, regex, arguments):        
+def listen (player, arguments):        
     """ listens to something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
@@ -181,7 +181,7 @@ def listen (player, regex, arguments):
     for obj in all:
         obj.listen(player)    
 
-def touch (player, regex, arguments):        
+def touch (player, arguments):        
     """ touches something in room or inventory """
     room    = player.location    
     exstr   = arguments[0]
@@ -202,14 +202,14 @@ def touch (player, regex, arguments):
 #################################################
 
 
-def walk (player, regex, arguments):
+def walk (player, arguments):
     """ changes current room """
     room      = player.location
     direction = arguments[0]
     room.leave(player, direction)
 
 
-def showRoom (player, regex, arguments): 
+def showRoom (player, arguments): 
     """ shows room description """       
     room = player.location
     room.showLong(player)
@@ -220,7 +220,7 @@ def showRoom (player, regex, arguments):
 
 from basic.exceptions import CharacterNotFound
 
-def kill (player, regex, arguments):
+def kill (player, arguments):
     """ kills another player """
     # get player's current room
     room = player.location
@@ -244,7 +244,7 @@ def kill (player, regex, arguments):
 from basic.exceptions import ItemReceiverNotFound, ItemNotFound 
 from basic.exceptions import UnsupportedUseAlias, UnsupportedUnuseAlias
 
-def throwAway (player, regex, arguments):
+def throwAway (player, arguments):
     """ throws item away """
     inv     = player.inventory
     itemstr = arguments[0]     
@@ -258,7 +258,7 @@ def throwAway (player, regex, arguments):
         item.throwAway(actor=player)
 
 
-def take (player, regex, arguments):
+def take (player, arguments):
     """ takes item """
     room    = player.location
     itemstr = arguments[0]
@@ -273,7 +273,7 @@ def take (player, regex, arguments):
 
 
         
-def giveTo (player, regex, arguments):
+def giveTo (player, arguments):
     """ gives item to another character """
     itemstr   = arguments[0]
     receivstr = arguments[1]
@@ -314,7 +314,7 @@ def giveTo (player, regex, arguments):
             item.giveTo(player, r)
 
      
-def putInto (player, regex, arguments):
+def putInto (player, arguments):
     """ puts item in another item """
     itemstr = arguments[0]
     binstr  = arguments[1]
@@ -343,7 +343,7 @@ def putInto (player, regex, arguments):
             item.putInto(player, b)
 
         
-def takeOut (player, regex, arguments):
+def takeOut (player, arguments):
     """ takes item out of another item """
     itemstr = arguments[0]
     
@@ -360,8 +360,7 @@ def takeOut (player, regex, arguments):
         item.takeOut(actor=player)
         
 
-
-def use (player, regex, arguments):
+def use (player, arguments):
     """ uses item """
     inv     = player.inventory
     itemstr = arguments[0]     
@@ -370,19 +369,11 @@ def use (player, regex, arguments):
     if not items :
         raise ItemNotFound("")
     
-    supported = []
-    for item in items:
-        if item.supportsUseAlias(regex):
-            supported.append(item)
-    
-    if not supported :
-        raise UnsupportedUseAlias("")
-    
-    for item in supported:    
+    for item in items:    
         item.use(actor=player)
                 
 
-def unuse (player, regex, arguments):
+def putAway (player, arguments):
     """ puts item back into inventory """
     inv     = player.inventory
     itemstr = arguments[0]     
@@ -391,14 +382,45 @@ def unuse (player, regex, arguments):
     if not items :
         raise ItemNotFound("")
     
-    supported = []
-    for item in items:
-        if item.supportsUnuseAlias(regex):
-            supported.append(item)
-    
-    if not supported :
-        raise UnsupportedUnuseAlias("")
-    
-    for item in supported:    
-        item.unuse(actor=player)
+    for item in items:    
+        item.putAway(actor=player)
                 
+
+def draw (player, arguments):
+    """ draws a weapon """
+    inv     = player.inventory
+    itemstr = arguments[0]     
+    items   = inv.callItems(itemstr)
+        
+    if not items :
+        raise ItemNotFound("")
+    
+    for item in items:    
+        item.draw(actor=player)
+        
+
+
+def drink (player, arguments):
+    """ drinks a potion """
+    inv     = player.inventory
+    itemstr = arguments[0]     
+    items   = inv.callItems(itemstr)
+        
+    if not items :
+        raise ItemNotFound("")
+    
+    for item in items:    
+        item.drink(actor=player)
+        
+
+def eat (player, arguments):
+    """ eats food """
+    inv     = player.inventory
+    itemstr = arguments[0]     
+    items   = inv.callItems(itemstr)
+        
+    if not items :
+        raise ItemNotFound("")
+    
+    for item in items:    
+        item.eat(actor=player)
