@@ -138,6 +138,12 @@ class BasicContext (Context):
         
         self.addSemantics("kill (.+)",kill)
         
+        self.addSemantics("drink (.+)", drink)
+        self.addSemantics("eat (.+)", eat)
+        self.addSemantics("draw (.+)", draw)
+        self.addSemantics("put (.+) on", putOn)
+        self.addSemantics("take (.+) off", takeOff)
+        
         
         #################################################################
         

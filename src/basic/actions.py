@@ -126,7 +126,7 @@ def showInfo (player, arguments):
 def showInventory (player, arguments):
     """ invokes showItems on player's inventory """   
     inventory = player.inventory
-    inventory.showItems(actor=player)
+    inventory.showItems(player)
 
 # senses
 #################################################
@@ -255,7 +255,7 @@ def throwAway (player, arguments):
         raise ItemNotFound("")
             
     for item in items:    
-        item.throwAway(actor=player)
+        item.throwAway(player)
 
 
 def take (player, arguments):
@@ -269,7 +269,7 @@ def take (player, arguments):
         raise ItemNotFound("")
             
     for item in items:    
-        item.take(actor=player)
+        item.take(player)
 
 
         
@@ -357,7 +357,7 @@ def takeOut (player, arguments):
         raise ItemNotFound("")
         
     for item in items:
-        item.takeOut(actor=player)
+        item.takeOut(player)
         
 
 def use (player, arguments):
@@ -370,7 +370,7 @@ def use (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
-        item.use(actor=player)
+        item.use(player)
                 
 
 def putAway (player, arguments):
@@ -383,7 +383,7 @@ def putAway (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
-        item.putAway(actor=player)
+        item.putAway(player)
                 
 
 def draw (player, arguments):
@@ -396,7 +396,7 @@ def draw (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
-        item.draw(actor=player)
+        item.draw(player)
         
 
 
@@ -410,7 +410,7 @@ def drink (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
-        item.drink(actor=player)
+        item.drink(player)
         
 
 def eat (player, arguments):
@@ -423,4 +423,29 @@ def eat (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
-        item.eat(actor=player)
+        item.eat(player)
+
+def putOn (player, arguments):
+    """ puts clothing on """
+    inv     = player.inventory
+    itemstr = arguments[0]     
+    items   = inv.callItems(itemstr)
+        
+    if not items :
+        raise ItemNotFound("")
+    
+    for item in items:    
+        item.putOn(player)
+        
+
+def takeOff (player, arguments):
+    """ takes clothing off """
+    inv     = player.inventory
+    itemstr = arguments[0]     
+    items   = inv.callItems(itemstr)
+        
+    if not items :
+        raise ItemNotFound("")
+    
+    for item in items:    
+        item.takeOff(player)

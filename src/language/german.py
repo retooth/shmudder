@@ -135,8 +135,17 @@ class BasicContext (Context):
         #self.addSemantics("teile (.+) mit (.+)",sayTo)
         
         self.addSemantics("schlafe ein",logout)
-        
         self.addSemantics("toete (.+)",kill)
+        
+        self.addSemantics("trinke (.+)", drink)
+        self.addSemantics("trink (.+)", drink)
+        self.addSemantics("esse (.+)", eat)
+        self.addSemantics("iss (.+)", eat)
+        self.addSemantics("zuecke (.+)", draw)
+        self.addSemantics("ziehe (.+) an", putOn)
+        self.addSemantics("zieh (.+) an", putOn)
+        self.addSemantics("ziehe (.+) aus", takeOff)
+        self.addSemantics("zieh (.+) aus", takeOff)
         
         
         #################################################################
