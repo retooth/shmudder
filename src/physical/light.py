@@ -54,8 +54,8 @@ class LightSource (ReusableItem, SignalEmitter):
             self.emitInRoom(light, new)        
     
         
-    def unuse (self, actor):
-        ReusableItem.unuse(self, actor)
+    def putAway (self, actor):
+        ReusableItem.putAway(self, actor)
         light = LightIntensityChange()
         light.intensity = - self.lightintensity
         self.emit(light)
