@@ -95,6 +95,7 @@ class BasicContext (Context):
         self.addSemantics("(norden)",walk)
         self.addSemantics("(sueden)",walk)
         
+        
         self.addSemantics("(nordosten)",walk)
         self.addSemantics("(nordwesten)",walk)
         self.addSemantics("(suedosten)",walk)
@@ -105,7 +106,7 @@ class BasicContext (Context):
         
         ######################################################
 
-        self.addSemantics("nimm (.+) aus (.+)",takeOut)        
+        self.addSemantics("nimm (.+) aus (.+)",takeOutOf)        
         self.addSemantics("nimm (.+)",take)
         self.addSemantics("wirf (.+) weg",throwAway)
         self.addSemantics("benutze (.+)",use)
@@ -146,6 +147,15 @@ class BasicContext (Context):
         self.addSemantics("zieh (.+) an", putOn)
         self.addSemantics("ziehe (.+) aus", takeOff)
         self.addSemantics("zieh (.+) aus", takeOff)
+        
+        self.addSemantics("^(no)$",walk)
+        self.addSemantics("^(nw)$",walk)
+        self.addSemantics("^(so)$",walk)
+        self.addSemantics("^(sw)$",walk)
+        self.addSemantics("^(o)$",walk)
+        self.addSemantics("^(w)$",walk)
+        self.addSemantics("^(n)$",walk)
+        self.addSemantics("^(s)$",walk)
         
         
         #################################################################

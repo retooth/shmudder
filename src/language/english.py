@@ -96,10 +96,14 @@ class BasicContext (Context):
         self.addSemantics("(north)",walk)
         self.addSemantics("(south)",walk)
         
+        
+        
         self.addSemantics("(northeast)",walk)
         self.addSemantics("(northwest)",walk)
         self.addSemantics("(southeast)",walk)
         self.addSemantics("(southwest)",walk)
+        
+        
         
         self.addSemantics("(up)",walk)
         self.addSemantics("(down)",walk)
@@ -111,7 +115,7 @@ class BasicContext (Context):
         self.addSemantics("use (.+)",use)
         self.addSemantics("put (.+) away",putAway)
         self.addSemantics("put (.+) in (.+)",putInto)
-        self.addSemantics("take (.+)",takeOut)
+        self.addSemantics("take (.+) out of (.+)",takeOutOf)
     
         ######################################################
         
@@ -143,6 +147,15 @@ class BasicContext (Context):
         self.addSemantics("draw (.+)", draw)
         self.addSemantics("put (.+) on", putOn)
         self.addSemantics("take (.+) off", takeOff)
+        
+        self.addSemantics("(n)",walk)
+        self.addSemantics("(w)",walk)
+        self.addSemantics("(s)",walk)
+        self.addSemantics("(e)",walk)
+        self.addSemantics("(ne)",walk)
+        self.addSemantics("(nw)",walk)
+        self.addSemantics("(se)",walk)
+        self.addSemantics("(sw)",walk)
         
         
         #################################################################

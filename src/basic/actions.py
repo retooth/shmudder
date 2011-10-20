@@ -22,7 +22,12 @@
 from engine.ormapping import Store
 from abstract.perception import callAdressables
 from basic.exceptions import UnknownPlayer, BadPassword
-from basic.exceptions import UnknownPlayerType, PlayerExists
+from basic.exceptions import UnknownPlayerType, PlayerExists, NotABin
+from basic.exceptions import ImpossibleAction, UndrinkableItem
+from basic.exceptions import UnusableItem, UnwearableItem
+from basic.exceptions import UneatableItem
+
+
 from hashlib import sha512
 
  
@@ -348,20 +353,30 @@ def putInto (player, arguments):
             item.putInto(player, b)
 
         
-def takeOut (player, arguments):
+def takeOutOf (player, arguments):
     """ takes item out of another item """
     itemstr = arguments[0]
+    binstr  = arguments[1]
     
     inv  = player.inventory
-    room = player.room
+    room = player.location
     
-    items =  inv.callAllItems(itemstr)
-    items += room.callAllItems(itemstr)
-        
-    if not items:
+    bins = callAdressables(binstr,inv.items + room.items)
+    
+    if not bins:
         raise ItemNotFound("")
-        
-    for item in items:
+    
+    allitems = []
+    for bin in bins:
+        if not "callItems" in dir(bin):
+            raise NotABin("")
+        items = bin.callItems(itemstr)
+        allitems += items
+    
+    if not allitems:
+        raise ItemNotFound
+    
+    for item in allitems:
         item.takeOut(player)
         
 
@@ -388,6 +403,8 @@ def putAway (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
+        if not 'putAway' in dir(item):
+            raise ImpossibleAction("")    
         item.putAway(player)
                 
 
@@ -400,7 +417,9 @@ def draw (player, arguments):
     if not items :
         raise ItemNotFound("")
     
-    for item in items:    
+    for item in items:
+        if not 'draw' in dir(item):
+            raise UnusableItem("")
         item.draw(player)
         
 
@@ -415,6 +434,8 @@ def drink (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
+        if not 'drink' in dir(item):
+            raise UndrinkableItem("")
         item.drink(player)
         
 
@@ -428,6 +449,8 @@ def eat (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
+        if not 'eat' in dir(item):
+            raise UneatableItem("")
         item.eat(player)
 
 def putOn (player, arguments):
@@ -440,6 +463,8 @@ def putOn (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
+        if not 'putOn' in dir(item):
+            raise UnwearableItem("")
         item.putOn(player)
         
 
@@ -453,4 +478,6 @@ def takeOff (player, arguments):
         raise ItemNotFound("")
     
     for item in items:    
+        if not 'takeOff' in dir(item):
+            raise ImpossibleAction("")
         item.takeOff(player)

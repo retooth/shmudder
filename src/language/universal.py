@@ -20,13 +20,13 @@ from basic.exceptions import UnknownAction
 
 class Semantics (object):
     
-    def __init__ (self,regex,actionf):
+    def __init__ (self, regex, actionf):
         self.regex   = regex
         self.actionf = actionf
     
-    def match (self,command):
+    def match (self, command):
         
-        m = re.findall(self.regex,command)
+        m = re.findall(self.regex, command)
         
         if not m:
             return False

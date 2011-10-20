@@ -63,35 +63,6 @@ class Item (DetailedPerceivable):
         pass
     
     
-    def use (self, actor):
-        """ [player action] raises UnusableItem """
-        raise UnusableItem("")
-
-
-    def putAway (self, actor):
-        raise ImpossibleAction("")
-
-
-    def draw (self, actor):
-        raise UnusableItem("")
-
-    
-    def drink (self, actor):
-        raise UndrinkableItem("")
-    
-    
-    def eat (self, actor):
-        raise UneatableItem("")
-    
-    
-    def putOn (self, actor):
-        raise UnwearableItem("")
-    
-    
-    def takeOff (self, actor):
-        raise ImpossibleAction("")
-    
-    
     def isInUse (self):
         """ [internal] Just a default to avoid type checking
         Returns always False
